@@ -42,7 +42,9 @@ cmd_init() {
   local name="${2:-}"
   mkdir -p "$target"
   echo "→ Copying baseline into: $target"
-  for item in CLAUDE.md README.md .ai rules docs packs scripts .githooks .github lighthouserc.json bootstrap.sh; do
+  # NOTE: .praxis-template and CHANGELOG.md are intentionally NOT copied — they belong to the baseline repo
+  # only. Omitting .praxis-template means projects get the full, enforced release gate.
+  for item in CLAUDE.md README.md .gitignore .ai rules docs packs scripts .githooks .github lighthouserc.json bootstrap.sh; do
     [ -e "$HERE/$item" ] && cp -R "$HERE/$item" "$target/"
   done
   stamp_dates "$target/.ai"

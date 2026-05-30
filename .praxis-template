@@ -1,0 +1,7 @@
+This file marks the Praxis BASELINE repository (the template itself), not a product project.
+
+Effect: scripts/check_release_gate.py skips the release gate when this file is present, so the
+baseline can be tagged/released without satisfying product testing/security/deployment gates.
+
+IMPORTANT: real projects must NOT contain this file. `bootstrap.sh init` deliberately does not copy it,
+so projects created from this baseline get the full, enforced release gate.

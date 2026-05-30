@@ -42,6 +42,14 @@ def main():
     args = ap.parse_args()
 
     root = find_root(args.root) or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Template exemption: the Praxis baseline repo is a TEMPLATE, not a product. Its releases ship the
+    # tooling itself (gates closed by design for downstream projects), so product release gates don't apply.
+    # A `.praxis-template` marker file at the repo root opts out of the gate. Real projects must NOT have it.
+    if os.path.exists(os.path.join(root, ".praxis-template")):
+        print(f"{GREEN}✓ .praxis-template present — this is the Praxis baseline; release gate skipped.{RESET}")
+        return 0
+
     status_path = os.path.join(root, ".ai", "state", "status.json")
     if not os.path.exists(status_path):
         print(f"{RED}✗ status.json not found at {status_path}{RESET}")
