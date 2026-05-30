@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 2
+    "next_id": 3
   },
   "items": [
     {
@@ -23,6 +23,25 @@
       "resolved_by_decision": "dec-002",
       "blocks": [],
       "status": "resolved",
+      "owner": "marcos@kineticmatrix.io"
+    },
+    {
+      "id": "debt-002",
+      "title": "Metric fetcher lacks a ratio adapter for derived KPIs",
+      "type": "automation-opportunity",
+      "category": "process",
+      "description": "scripts/fetch_metrics.py adapters return a single scalar per source (event count, row count, p75). Ratio/derived KPIs such as activation rate (kpi-001 = activated_users / new_users) cannot be computed from one query, so their values must be supplied manually or carried forward. Affects any rate, conversion, or per-user KPI.",
+      "manual_today": true,
+      "automatable": true,
+      "proposed_automation": "Add a 'ratio' fetch type to fetch_metrics.py that runs numerator + denominator sub-queries (each reusing an existing adapter) and divides. Config shape e.g. instrumentation.fetch: { \"type\": \"ratio\", \"numerator\": {\"source\":\"amplitude\",\"event\":\"core_action_completed\",\"metric\":\"uniques\"}, \"denominator\": {\"source\":\"amplitude\",\"event\":\"signed_up\",\"metric\":\"uniques\"}, \"scale\": 100 }. Keep the safe-skip contract: omit the KPI if either side is missing. Update entries.md + scripts/README.md, then re-point seed kpi-001 at it. Target v0.2.0.",
+      "impact": "medium",
+      "effort": "medium",
+      "interest_rate": "Low until a project relies on a ratio KPI in CI; then it blocks automated tracking for that KPI.",
+      "introduced": "REPLACE_ISO_DATE",
+      "introduced_by_decision": "dec-002",
+      "resolved_by_decision": null,
+      "blocks": [],
+      "status": "open",
       "owner": "marcos@kineticmatrix.io"
     }
   ]
