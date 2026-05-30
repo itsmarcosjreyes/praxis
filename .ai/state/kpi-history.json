@@ -2,7 +2,7 @@
   "$schema": "../schemas/kpi-history.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "REPLACE_ISO_DATE",
+    "last_updated": "2026-05-30",
     "note": "One snapshot object per release. Append-only. Compute deltas vs the previous release."
   },
   "snapshots": [
@@ -11,11 +11,58 @@
       "date": "REPLACE_ISO_DATE",
       "git_ref": "",
       "values": [
-        { "kpi_id": "kpi-001", "value": null, "delta_vs_prev": null, "target": 40, "on_track": null },
-        { "kpi_id": "kpi-002", "value": null, "delta_vs_prev": null, "target": 2.5, "on_track": null },
-        { "kpi_id": "kpi-003", "value": null, "delta_vs_prev": null, "target": 100, "on_track": null }
+        {
+          "kpi_id": "kpi-001",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 40,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-002",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 2.5,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-003",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 100,
+          "on_track": null
+        }
       ],
       "notes": "Baseline snapshot. Replace nulls once instrumentation is live."
+    },
+    {
+      "release": "v0.1.1",
+      "date": "2026-05-30",
+      "git_ref": "3166dd6e626d7ec273be43fcee08d651cb8b74a5",
+      "values": [
+        {
+          "kpi_id": "kpi-001",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 40,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-002",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 2.5,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-003",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 100,
+          "on_track": null
+        }
+      ],
+      "notes": "Auto-snapshot for v0.1.1."
     }
   ]
 }
