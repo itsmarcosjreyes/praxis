@@ -2,21 +2,37 @@
   "$schema": "../schemas/status.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "REPLACE_ISO_DATE",
+    "last_updated": "2026-05-30",
     "updated_by": "agent|human",
     "note": "Live snapshot of where the project is RIGHT NOW. Update at the start and end of every work session."
   },
   "phase": "phase-0",
   "current_focus": "Describe the single thing being worked on now.",
   "active_feature_doc": "",
-  "current_release": "v0.0.0",
+  "current_release": "v0.1.1",
   "health": "green",
   "blockers": [],
   "checklists": {
-    "testing": { "state": "not-run", "last_run": null, "ref": "rules/03-testing-checklist.md" },
-    "security": { "state": "not-run", "last_run": null, "ref": "rules/04-security-checklist.md" },
-    "deployment": { "state": "not-run", "last_run": null, "ref": "rules/05-deployment-checklist.md" },
-    "seo_pagespeed": { "state": "n/a", "last_run": null, "ref": "rules/06-seo-pagespeed.md" }
+    "testing": {
+      "state": "not-run",
+      "last_run": null,
+      "ref": "rules/03-testing-checklist.md"
+    },
+    "security": {
+      "state": "not-run",
+      "last_run": null,
+      "ref": "rules/04-security-checklist.md"
+    },
+    "deployment": {
+      "state": "not-run",
+      "last_run": null,
+      "ref": "rules/05-deployment-checklist.md"
+    },
+    "seo_pagespeed": {
+      "state": "n/a",
+      "last_run": null,
+      "ref": "rules/06-seo-pagespeed.md"
+    }
   },
   "release_gate_open": false,
   "open_decisions_needed": [],

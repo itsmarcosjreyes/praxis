@@ -2,13 +2,13 @@
   "$schema": "../schemas/memory.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "REPLACE_ISO_DATE",
+    "last_updated": "2026-05-30",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
     "next_id": 4
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
-    "where_we_are": "Current phase and what just shipped.",
+    "where_we_are": "Shipped v0.1.1 on 2026-05-30.",
     "whats_next": "The immediate next milestone.",
     "key_risks": []
   },
@@ -22,7 +22,11 @@
       "type": "init",
       "title": "EXAMPLE: Project initialized from AI Guidance baseline.",
       "detail": "What happened and why it matters for future agents.",
-      "links": { "decision": "dec-001", "release": null, "feature_doc": null }
+      "links": {
+        "decision": "dec-001",
+        "release": null,
+        "feature_doc": null
+      }
     },
     {
       "id": "mem-002",
@@ -30,15 +34,35 @@
       "type": "milestone",
       "title": "Enforcement layer + auto KPI-snapshot added.",
       "detail": "Git hooks (pre-commit validate, pre-push gate on v* tags), CI (state-validation, lighthouse-ci, kpi-snapshot), and scripts (validate_state, check_release_gate, snapshot_kpis) make state integrity and release gates machine-enforced. KPI snapshots, memory entries, and status resets now run automatically on release tags. Resolved debt-001.",
-      "links": { "decision": "dec-002", "release": null, "feature_doc": null }
+      "links": {
+        "decision": "dec-002",
+        "release": null,
+        "feature_doc": null
+      }
     },
     {
       "id": "mem-003",
       "date": "REPLACE_ISO_DATE",
       "type": "milestone",
       "title": "Reference metric fetcher wired into the snapshot pipeline.",
-      "detail": "scripts/fetch_metrics.py (+ fetch_metrics.sh wrapper) reads kpis.json and queries each KPI's instrumentation.source — Amplitude (event segmentation), Supabase (PostgREST count), CrUX (field p75). Wired into kpi-snapshot.yml before the snapshot step. Unconfigured/erroring sources are omitted and carried forward, so the release pipeline is now fully turnkey without ever blocking on metric retrieval. Seed kpis.json now uses concrete sources + fetch config.",
-      "links": { "decision": "dec-002", "release": null, "feature_doc": null }
+      "detail": "scripts/fetch_metrics.py (+ fetch_metrics.sh wrapper) reads kpis.json and queries each KPI's instrumentation.source \u2014 Amplitude (event segmentation), Supabase (PostgREST count), CrUX (field p75). Wired into kpi-snapshot.yml before the snapshot step. Unconfigured/erroring sources are omitted and carried forward, so the release pipeline is now fully turnkey without ever blocking on metric retrieval. Seed kpis.json now uses concrete sources + fetch config.",
+      "links": {
+        "decision": "dec-002",
+        "release": null,
+        "feature_doc": null
+      }
+    },
+    {
+      "id": "mem-004",
+      "date": "2026-05-30",
+      "type": "release",
+      "title": "Released v0.1.1",
+      "detail": "KPI snapshot recorded. Off-track: none.",
+      "links": {
+        "decision": null,
+        "release": "v0.1.1",
+        "feature_doc": null
+      }
     }
   ],
   "learnings": [
