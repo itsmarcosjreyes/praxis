@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memory.schema.json",
+  "title": "Project Memory",
+  "type": "object",
+  "required": ["meta", "summary", "timeline"],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["what", "where_we_are", "whats_next"]
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "date", "type", "title"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^mem-[0-9]{3,}$" },
+          "type": { "enum": ["milestone", "decision", "pivot", "release", "incident", "learning", "init"] }
+        }
+      }
+    }
+  }
+}

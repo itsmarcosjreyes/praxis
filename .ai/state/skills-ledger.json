@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/skills-ledger.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "audit_sources": [
+      "installed skills (global + project)",
+      "installed MCP connectors",
+      "https://www.aitmpl.com/skills/",
+      "https://21st.dev/home (UI references)"
+    ],
+    "audit_cadence": "Before every project start and before every new feature.",
+    "next_id": 2
+  },
+  "active_skills": [],
+  "active_connectors": [],
+  "ui_reference_sources": ["https://21st.dev/home"],
+  "ledger": [
+    {
+      "id": "skl-001",
+      "action": "evaluated",
+      "name": "EXAMPLE: example-skill",
+      "kind": "skill",
+      "source": "aitmpl.com|global|project|21st.dev",
+      "date": "REPLACE_ISO_DATE",
+      "reason": "Audited during pre-flight; confirmed best-available for the task.",
+      "replaced": null,
+      "replaced_by": null,
+      "decision_link": null
+    }
+  ]
+}

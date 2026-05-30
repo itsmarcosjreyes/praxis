@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "decisions.schema.json",
+  "title": "Decisions",
+  "type": "object",
+  "required": ["meta", "decisions"],
+  "properties": {
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "date", "category", "goal_link", "decision", "tradeoff", "horizons"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^dec-[0-9]{3,}$" },
+          "status": { "enum": ["proposed", "accepted", "rejected", "superseded"] },
+          "category": { "enum": ["architecture", "technology", "vendor", "data-model", "api", "security", "compliance", "process", "ux", "other"] },
+          "horizons": { "type": "object", "required": ["short_term", "mid_term", "long_term"] },
+          "reversible": { "type": "boolean" },
+          "supersedes": { "type": ["string", "null"] },
+          "superseded_by": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

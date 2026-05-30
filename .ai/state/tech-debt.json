@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/tech-debt.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "next_id": 2
+  },
+  "items": [
+    {
+      "id": "debt-001",
+      "title": "Manual KPI snapshot at release",
+      "type": "automation-opportunity",
+      "category": "process",
+      "description": "KPI snapshot was written by hand at each release. Automated via .github/workflows/kpi-snapshot.yml (snapshot_kpis.py) on v* tag push: enforces gate, appends snapshot + deltas, records memory entry, resets status, commits back. Remaining manual seam: project-specific metric fetch into metrics.json (documented in scripts/README.md).",
+      "manual_today": false,
+      "automatable": true,
+      "proposed_automation": "Done. Add a project-specific fetch step that writes metrics.json before the snapshot step for fully-automated values.",
+      "impact": "medium",
+      "effort": "low",
+      "interest_rate": "Resolved; only the per-project metric source remains to wire.",
+      "introduced": "REPLACE_ISO_DATE",
+      "introduced_by_decision": null,
+      "resolved_by_decision": "dec-002",
+      "blocks": [],
+      "status": "resolved",
+      "owner": "marcos@kineticmatrix.io"
+    }
+  ]
+}

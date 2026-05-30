@@ -1,0 +1,38 @@
+# --- Praxis baseline ignores ---
+# Transient metric payload produced by scripts/fetch_metrics.* (regenerated each release)
+metrics.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node / web projects layered on top of the baseline
+node_modules/
+dist/
+build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Env & secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Lighthouse CI artifacts
+.lighthouseci/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json

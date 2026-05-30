@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kpi-history.schema.json",
+  "title": "KPI History",
+  "type": "object",
+  "required": ["meta", "snapshots"],
+  "properties": {
+    "snapshots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["release", "date", "values"],
+        "properties": {
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["kpi_id", "value", "target"],
+              "properties": {
+                "kpi_id": { "type": "string", "pattern": "^kpi-[0-9]{3,}$" },
+                "value": { "type": ["number", "null"] },
+                "delta_vs_prev": { "type": ["number", "null"] },
+                "on_track": { "type": ["boolean", "null"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

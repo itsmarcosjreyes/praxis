@@ -1,0 +1,60 @@
+{
+  "$schema": "../schemas/decisions.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "next_id": 3
+  },
+  "decisions": [
+    {
+      "id": "dec-001",
+      "title": "EXAMPLE: Adopt this AI Guidance baseline as the project operating system",
+      "status": "accepted",
+      "date": "REPLACE_ISO_DATE",
+      "author": "marcos@kineticmatrix.io",
+      "category": "process",
+      "goal_link": "Ensures every project is built to the same standard, surviving context compaction.",
+      "context": "Why this decision is needed; the forces at play.",
+      "options_considered": [
+        { "option": "Ad-hoc per project", "pros": ["fast"], "cons": ["inconsistent", "no memory"] },
+        { "option": "Standardized JSON-backed operating system", "pros": ["repeatable", "agent-resumable"], "cons": ["upfront setup"] }
+      ],
+      "decision": "Use the standardized baseline.",
+      "tradeoff": "Adds upfront structure in exchange for long-term consistency and AI resumability.",
+      "horizons": {
+        "short_term": "Slightly more setup per project.",
+        "mid_term": "Faster onboarding of agents and humans.",
+        "long_term": "Portfolio-level consistency and compounding leverage."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0001-adopt-baseline.md"
+    },
+    {
+      "id": "dec-002",
+      "title": "Enforce state integrity and release gates with git hooks + CI, and automate KPI snapshots",
+      "status": "accepted",
+      "date": "REPLACE_ISO_DATE",
+      "author": "marcos@kineticmatrix.io",
+      "category": "process",
+      "goal_link": "Makes the JSON-as-source-of-truth model machine-enforced rather than instruction-only, so state cannot silently drift.",
+      "context": "The baseline relied on agents/humans remembering to update state and pass gates. Discipline alone is not deterministic; drift is inevitable at scale.",
+      "options_considered": [
+        { "option": "Instruction-only (rules in CLAUDE.md)", "pros": ["zero setup"], "cons": ["non-deterministic", "drifts under context compaction"] },
+        { "option": "Git hooks + CI enforcement + automated snapshots", "pros": ["deterministic", "drift blocked at commit/merge/release", "bookkeeping automated"], "cons": ["small CI/runtime cost", "needs git + python"] }
+      ],
+      "decision": "Add .githooks (pre-commit validate, pre-push gate on v* tags), CI workflows (state-validation, lighthouse-ci, kpi-snapshot), and scripts (validate_state, check_release_gate, snapshot_kpis).",
+      "tradeoff": "Adds a python+git dependency and minor CI time in exchange for deterministic, self-enforcing state and zero-effort release bookkeeping.",
+      "horizons": {
+        "short_term": "Commits with invalid state are blocked; releases require passed gates.",
+        "mid_term": "Release bookkeeping (KPI snapshot, memory, status reset) is automatic on tag.",
+        "long_term": "State integrity scales across the whole portfolio without relying on memory."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0002-enforcement-layer.md"
+    }
+  ]
+}

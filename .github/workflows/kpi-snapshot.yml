@@ -1,0 +1,81 @@
+name: KPI Snapshot (on release tag)
+
+# Automates the post-deploy bookkeeping (was debt-001):
+#   1. Enforces the release gate from status.json.
+#   2. Appends a per-release KPI snapshot to kpi-history.json (with deltas + on_track).
+#   3. Appends a release entry to memory.json.
+#   4. Resets status.json checklists for the next cycle.
+#   5. Commits the updated state back to the default branch.
+#
+# Triggered by pushing a version tag, e.g.:  git tag v1.2.0 && git push origin v1.2.0
+#
+# Metric VALUES are project-specific (Amplitude / Supabase / CrUX). Add a fetch step that
+# writes metrics.json ({"kpi-001": 42.0, ...}) and the snapshot will pick it up. Without it,
+# the snapshot carries previous values forward so the bookkeeping never blocks the release.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Enforce release gate
+        run: python3 scripts/check_release_gate.py --root .
+
+      # --- METRIC FETCH (reference: scripts/fetch_metrics.{sh,py}) ---
+      # Reads .ai/state/kpis.json and queries each KPI's instrumentation.source (Amplitude/Supabase/CrUX),
+      # writing metrics.json. Any KPI whose source is unset or errors is omitted and carried forward, so a
+      # flaky source never blocks the release. Add the secrets you actually use; leave the rest unset.
+      - name: Fetch metrics
+        run: bash ./scripts/fetch_metrics.sh
+        env:
+          AMPLITUDE_API_KEY:         ${{ secrets.AMPLITUDE_API_KEY }}
+          AMPLITUDE_SECRET_KEY:      ${{ secrets.AMPLITUDE_SECRET_KEY }}
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CRUX_API_KEY:              ${{ secrets.CRUX_API_KEY }}
+
+      - name: Append KPI snapshot + memory entry, reset status
+        run: |
+          VALUES_ARG=""
+          [ -f metrics.json ] && VALUES_ARG="--values metrics.json"
+          python3 scripts/snapshot_kpis.py \
+            --release "${GITHUB_REF_NAME}" \
+            --git-ref "${GITHUB_SHA}" \
+            --reset-status \
+            $VALUES_ARG
+
+      - name: Validate updated state
+        run: python3 scripts/validate_state.py --root .
+
+      - name: Commit state back to default branch
+        run: |
+          git config user.name  "ai-guidance-bot"
+          git config user.email "actions@users.noreply.github.com"
+          DEFAULT_BRANCH="${GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH:-main}"
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout "$DEFAULT_BRANCH"
+          git add .ai/state/kpi-history.json .ai/state/memory.json .ai/state/status.json
+          if git diff --staged --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "chore(state): KPI snapshot + release bookkeeping for ${GITHUB_REF_NAME} [skip ci]"
+            git push origin "$DEFAULT_BRANCH"
+          fi

@@ -1,0 +1,52 @@
+name: Lighthouse CI (Core Web Vitals gate)
+
+# Enforces rules/06-seo-pagespeed.md as a release gate for web-accessible surfaces.
+# Self-gating: runs only when "web-seo" is in project.json -> active_packs, so non-web
+# projects skip it automatically. Assertions live in lighthouserc.json.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.check.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        name: Is web-seo pack active?
+        run: |
+          if grep -q '"web-seo"' .ai/state/project.json; then
+            echo "web=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "web=false" >> "$GITHUB_OUTPUT"
+            echo "web-seo pack not active — skipping Lighthouse."
+          fi
+
+  lighthouse:
+    needs: detect
+    if: needs.detect.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # --- PROJECT-SPECIFIC: build your site and point LHCI at it. ---
+      # Defaults assume `npm ci && npm run build` produces a static ./dist or ./out,
+      # or that `npm run start` serves on http://localhost:3000. Edit for your stack.
+      - name: Install & build
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else echo "no lockfile; skipping"; fi
+          npm run build --if-present
+
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.13.x
+          lhci autorun || exit 1
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

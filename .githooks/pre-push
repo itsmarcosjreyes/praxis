@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pre-push hook — enforces the release gate ONLY when pushing a version tag (vX.Y.Z).
+# Normal branch pushes are unaffected (WIP must not be blocked by release gates).
+# Installed via: git config core.hooksPath .githooks
+#
+# Reads refs being pushed from stdin (git protocol). If any pushed ref is a tag matching v*,
+# runs check_release_gate.py and blocks the push unless all release gates are satisfied.
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+PY="$(command -v python3 || true)"
+[ -z "$PY" ] && { echo "⚠ pre-push: python3 not found; skipping gate check."; exit 0; }
+
+pushing_tag=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/tags/v*) pushing_tag=1 ;;
+  esac
+done
+
+if [ "$pushing_tag" -eq 1 ]; then
+  echo "→ pre-push: version tag detected — enforcing release gate ..."
+  if ! "$PY" "$ROOT/scripts/check_release_gate.py" --root "$ROOT"; then
+    echo ""
+    echo "✗ Push blocked: release gate is closed. Pass testing/security/deployment (and SEO for web), then set release_gate_open=true in status.json."
+    echo "  Override (not recommended): git push --no-verify"
+    exit 1
+  fi
+fi
+
+exit 0

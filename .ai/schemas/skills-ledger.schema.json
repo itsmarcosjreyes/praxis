@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "skills-ledger.schema.json",
+  "title": "Skills Ledger",
+  "type": "object",
+  "required": ["meta", "ledger"],
+  "properties": {
+    "ledger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "action", "name", "kind", "date", "reason"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^skl-[0-9]{3,}$" },
+          "action": { "enum": ["added", "removed", "replaced", "evaluated", "kept"] },
+          "kind": { "enum": ["skill", "connector", "ui-reference", "plugin"] },
+          "replaced": { "type": ["string", "null"] },
+          "replaced_by": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

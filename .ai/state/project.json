@@ -1,0 +1,62 @@
+{
+  "$schema": "../schemas/project.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "created": "REPLACE_ISO_DATE",
+    "last_updated": "REPLACE_ISO_DATE",
+    "updated_by": "agent|human"
+  },
+  "identity": {
+    "name": "REPLACE_PROJECT_NAME",
+    "codename": "",
+    "slug": "replace-project-slug",
+    "type": "web",
+    "owner": "marcos@kineticmatrix.io",
+    "ecosystem": "kinetic-matrix",
+    "repository": "",
+    "production_url": ""
+  },
+  "goal": {
+    "one_sentence": "REPLACE: [Project] helps [who] achieve [outcome] by [mechanism], measured by [primary KPI].",
+    "non_goals": [
+      "Explicitly list what this project will NOT do, to protect scope."
+    ],
+    "primary_kpi_id": "kpi-001"
+  },
+  "audience": {
+    "primary": "",
+    "secondary": "",
+    "jobs_to_be_done": []
+  },
+  "mvp": {
+    "definition": "The smallest shippable thing that delivers the one-sentence goal.",
+    "in_scope": [],
+    "out_of_scope": [],
+    "acceptance_criteria": [],
+    "target_date": "",
+    "status": "not-started"
+  },
+  "horizons": {
+    "short_term": "Next 1-2 weeks / this release.",
+    "mid_term": "This quarter. What this unlocks or constrains.",
+    "long_term": "Platform vision. Why this scales."
+  },
+  "constraints": {
+    "business": [],
+    "platform_compliance": [],
+    "technical": [],
+    "budget": ""
+  },
+  "stack": {
+    "frontend": "vercel",
+    "backend": "supabase",
+    "compute": "modal",
+    "automation": "n8n",
+    "llm_routing": "openrouter",
+    "cloud": "aws",
+    "ci_cd": "github-actions",
+    "analytics": "segment+amplitude",
+    "overrides": []
+  },
+  "active_packs": []
+}

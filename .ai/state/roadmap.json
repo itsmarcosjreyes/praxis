@@ -1,0 +1,52 @@
+{
+  "$schema": "../schemas/roadmap.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE"
+  },
+  "vision": "One paragraph describing the long-term platform this grows into.",
+  "phases": [
+    {
+      "id": "phase-0",
+      "name": "MVP / v1",
+      "horizon": "short_term",
+      "status": "in-progress",
+      "goal": "Ship the smallest thing that delivers the one-sentence goal.",
+      "target_date": "",
+      "kpi_targets": ["kpi-001"],
+      "items": [
+        {
+          "id": "item-001",
+          "title": "EXAMPLE roadmap item",
+          "feature_doc": "docs/features/example.feature.md",
+          "priority": "P0",
+          "status": "todo",
+          "estimate": "",
+          "depends_on": [],
+          "unlocks": [],
+          "profitability_link": "prof-001"
+        }
+      ]
+    },
+    {
+      "id": "phase-1",
+      "name": "Growth / v2",
+      "horizon": "mid_term",
+      "status": "planned",
+      "goal": "Expand on validated MVP; add growth loops.",
+      "target_date": "",
+      "kpi_targets": [],
+      "items": []
+    },
+    {
+      "id": "phase-2",
+      "name": "Platform / scale",
+      "horizon": "long_term",
+      "status": "planned",
+      "goal": "Turn the product into a durable, scalable platform.",
+      "target_date": "",
+      "kpi_targets": [],
+      "items": []
+    }
+  ]
+}

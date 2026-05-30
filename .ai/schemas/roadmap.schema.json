@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "roadmap.schema.json",
+  "title": "Roadmap",
+  "type": "object",
+  "required": ["meta", "vision", "phases"],
+  "properties": {
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "horizon", "status", "goal", "items"],
+        "properties": {
+          "horizon": { "enum": ["short_term", "mid_term", "long_term"] },
+          "status": { "enum": ["planned", "in-progress", "done", "cancelled"] },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "title", "priority", "status"],
+              "properties": {
+                "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+                "status": { "enum": ["todo", "in-progress", "blocked", "done", "cut"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

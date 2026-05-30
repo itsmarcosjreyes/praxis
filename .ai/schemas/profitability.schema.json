@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "profitability.schema.json",
+  "title": "Profitability",
+  "type": "object",
+  "required": ["meta", "mechanisms"],
+  "properties": {
+    "mechanisms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "description", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^prof-[0-9]{3,}$" },
+          "type": { "enum": ["email-capture", "cross-marketing-social", "cross-sell-portfolio", "paid-tier", "subscription", "one-time", "affiliate", "ads", "sponsorship", "other"] },
+          "status": { "enum": ["idea", "planned", "active", "paused", "retired"] },
+          "kpi_link": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tech-debt.schema.json",
+  "title": "Tech Debt",
+  "type": "object",
+  "required": ["meta", "items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "type", "description", "impact", "effort", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^debt-[0-9]{3,}$" },
+          "type": { "enum": ["code-debt", "design-debt", "test-debt", "doc-debt", "infra-debt", "automation-opportunity", "security-debt"] },
+          "manual_today": { "type": "boolean" },
+          "automatable": { "type": "boolean" },
+          "impact": { "enum": ["low", "medium", "high", "critical"] },
+          "effort": { "enum": ["low", "medium", "high"] },
+          "status": { "enum": ["open", "scheduled", "in-progress", "resolved", "wontfix"] }
+        }
+      }
+    }
+  }
+}

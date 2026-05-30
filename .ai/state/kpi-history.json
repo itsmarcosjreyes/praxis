@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/kpi-history.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "note": "One snapshot object per release. Append-only. Compute deltas vs the previous release."
+  },
+  "snapshots": [
+    {
+      "release": "v0.0.0",
+      "date": "REPLACE_ISO_DATE",
+      "git_ref": "",
+      "values": [
+        { "kpi_id": "kpi-001", "value": null, "delta_vs_prev": null, "target": 40, "on_track": null },
+        { "kpi_id": "kpi-002", "value": null, "delta_vs_prev": null, "target": 2.5, "on_track": null },
+        { "kpi_id": "kpi-003", "value": null, "delta_vs_prev": null, "target": 100, "on_track": null }
+      ],
+      "notes": "Baseline snapshot. Replace nulls once instrumentation is live."
+    }
+  ]
+}

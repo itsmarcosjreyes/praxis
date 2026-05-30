@@ -1,0 +1,27 @@
+name: State Validation
+
+# Validates the .ai/state JSON source-of-truth on every push and PR.
+# This is the CI mirror of the pre-commit hook — it stops state drift from merging.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  validate-state:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Validate state files (strict)
+        # --strict fails on leftover REPLACE_* placeholders, which are drift in a real project.
+        # Remove --strict on the template repo itself, where placeholders are expected.
+        run: python3 scripts/validate_state.py --strict --root .

@@ -1,0 +1,57 @@
+{
+  "$schema": "../schemas/kpis.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "next_id": 4
+  },
+  "kpis": [
+    {
+      "id": "kpi-001",
+      "name": "EXAMPLE: Activation rate",
+      "category": "product",
+      "definition": "Percent of new users who complete the core activation event within 24h.",
+      "formula": "activated_users / new_users",
+      "unit": "percent",
+      "target": 40,
+      "direction": "higher-is-better",
+      "instrumentation": {
+        "source": "amplitude",
+        "event": "core_action_completed",
+        "implemented": false,
+        "fetch": { "metric": "uniques" }
+      },
+      "owner": "marcos@kineticmatrix.io",
+      "review_cadence": "per-release",
+      "is_primary": true
+    },
+    {
+      "id": "kpi-002",
+      "name": "EXAMPLE: Web LCP (p75)",
+      "category": "performance",
+      "definition": "75th percentile Largest Contentful Paint on the primary route.",
+      "formula": "p75(LCP)",
+      "unit": "seconds",
+      "target": 2.5,
+      "direction": "lower-is-better",
+      "instrumentation": { "source": "crux", "event": "web-vitals", "implemented": false, "fetch": { "url": "https://REPLACE_PRODUCTION_ORIGIN/", "form_factor": "PHONE", "percentile_metric": "largest_contentful_paint" } },
+      "owner": "marcos@kineticmatrix.io",
+      "review_cadence": "per-release",
+      "is_primary": false
+    },
+    {
+      "id": "kpi-003",
+      "name": "EXAMPLE: Email captures",
+      "category": "growth",
+      "definition": "Net new captured emails per week (profitability loop).",
+      "formula": "count(new_subscribers)",
+      "unit": "count",
+      "target": 100,
+      "direction": "higher-is-better",
+      "instrumentation": { "source": "supabase", "event": "email_captured", "implemented": false, "fetch": { "table": "subscribers", "filter": "created_at=gte.{since}" } },
+      "owner": "marcos@kineticmatrix.io",
+      "review_cadence": "weekly",
+      "is_primary": false
+    }
+  ]
+}

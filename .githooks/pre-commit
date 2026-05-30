@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Pre-commit hook — validates .ai/state/*.json against schemas before every commit.
+# Installed via: git config core.hooksPath .githooks   (bootstrap.sh init does this for you)
+#
+# Fast, always-on. Blocks the commit if any state file is invalid JSON, fails its schema,
+# or has duplicate IDs. Placeholders (REPLACE_*) are a warning here, not a block.
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+PY="$(command -v python3 || true)"
+
+if [ -z "$PY" ]; then
+  echo "⚠ pre-commit: python3 not found; skipping state validation."
+  exit 0
+fi
+
+# Only run if state files are staged or exist; cheap to just run when .ai/state exists.
+if [ -d "$ROOT/.ai/state" ]; then
+  echo "→ pre-commit: validating .ai/state ..."
+  if ! "$PY" "$ROOT/scripts/validate_state.py" --root "$ROOT"; then
+    echo ""
+    echo "✗ Commit blocked: state validation failed. Fix the JSON above, or use 'git commit --no-verify' to override (not recommended)."
+    exit 1
+  fi
+fi
+
+exit 0

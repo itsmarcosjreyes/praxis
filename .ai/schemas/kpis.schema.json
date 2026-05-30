@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kpis.schema.json",
+  "title": "KPIs",
+  "type": "object",
+  "required": ["meta", "kpis"],
+  "properties": {
+    "kpis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "category", "definition", "unit", "target", "direction", "instrumentation"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^kpi-[0-9]{3,}$" },
+          "category": { "enum": ["product", "growth", "performance", "reliability", "revenue", "engagement", "quality"] },
+          "direction": { "enum": ["higher-is-better", "lower-is-better"] },
+          "instrumentation": { "type": "object", "required": ["source", "implemented"] },
+          "is_primary": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

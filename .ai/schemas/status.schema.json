@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "status.schema.json",
+  "title": "Status",
+  "type": "object",
+  "required": ["meta", "phase", "current_focus", "health", "checklists", "next_action"],
+  "properties": {
+    "health": { "enum": ["green", "yellow", "red"] },
+    "release_gate_open": { "type": "boolean" },
+    "checklists": {
+      "type": "object",
+      "required": ["testing", "security", "deployment"],
+      "properties": {
+        "testing": { "$ref": "#/$defs/checklist" },
+        "security": { "$ref": "#/$defs/checklist" },
+        "deployment": { "$ref": "#/$defs/checklist" },
+        "seo_pagespeed": { "$ref": "#/$defs/checklist" }
+      }
+    }
+  },
+  "$defs": {
+    "checklist": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": { "enum": ["n/a", "not-run", "in-progress", "passed", "failed"] }
+      }
+    }
+  }
+}

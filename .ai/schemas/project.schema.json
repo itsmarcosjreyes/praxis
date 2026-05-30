@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project.schema.json",
+  "title": "Project",
+  "type": "object",
+  "required": ["meta", "identity", "goal", "mvp", "horizons", "stack"],
+  "properties": {
+    "meta": { "type": "object", "required": ["schema_version", "last_updated"] },
+    "identity": {
+      "type": "object",
+      "required": ["name", "slug", "type", "owner"],
+      "properties": {
+        "type": { "enum": ["web", "saas", "ios", "tvos", "android", "streaming", "ai-service", "library", "other"] }
+      }
+    },
+    "goal": {
+      "type": "object",
+      "required": ["one_sentence", "primary_kpi_id"],
+      "properties": { "one_sentence": { "type": "string", "minLength": 10 } }
+    },
+    "mvp": {
+      "type": "object",
+      "required": ["definition", "in_scope", "acceptance_criteria", "status"],
+      "properties": { "status": { "enum": ["not-started", "in-progress", "shipped"] } }
+    },
+    "horizons": {
+      "type": "object",
+      "required": ["short_term", "mid_term", "long_term"]
+    },
+    "stack": { "type": "object" },
+    "active_packs": { "type": "array", "items": { "enum": ["web-seo", "mobile", "ai-service", "streaming"] } }
+  }
+}

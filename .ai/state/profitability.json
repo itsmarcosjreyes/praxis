@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/profitability.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "rule": "At least one mechanism must be 'active' before MVP ship. A web surface without an email capture or growth loop is not done.",
+    "next_id": 2
+  },
+  "mechanisms": [
+    {
+      "id": "prof-001",
+      "type": "email-capture",
+      "description": "Capture emails on the primary surface and route to nurture list.",
+      "status": "planned",
+      "kpi_link": "kpi-003",
+      "tooling": "supabase|klaviyo",
+      "owner": "marcos@kineticmatrix.io",
+      "estimated_value": "Top-of-funnel for every downstream monetization path."
+    },
+    {
+      "id": "prof-002",
+      "type": "cross-marketing-social",
+      "description": "Auto-publish key moments/content to social channels to drive traffic back.",
+      "status": "planned",
+      "kpi_link": "kpi-003",
+      "tooling": "n8n",
+      "owner": "marcos@kineticmatrix.io",
+      "estimated_value": "Compounding organic reach."
+    },
+    {
+      "id": "prof-003",
+      "type": "cross-sell-portfolio",
+      "description": "Tie-in with another Kinetic Matrix project (shared auth, referral, bundle).",
+      "status": "idea",
+      "kpi_link": null,
+      "tooling": "",
+      "owner": "marcos@kineticmatrix.io",
+      "estimated_value": "Portfolio leverage; reduce per-product CAC."
+    }
+  ],
+  "monetization_paths": [
+    { "type": "paid-tier|subscription|one-time|affiliate|ads|sponsorship", "status": "idea", "notes": "" }
+  ]
+}
