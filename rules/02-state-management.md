@@ -6,7 +6,7 @@ files validate against their schema in `.ai/schemas/`. Always set `meta.last_upd
 
 | File | Write WHEN | Key discipline |
 |---|---|---|
-| `project.json` | Identity, goal, MVP scope, stack, or horizons change | Goal must stay one sentence; log stack overrides as decisions |
+| `PROJECT.md` → `project.json` | Identity, goal, MVP scope, stack, or horizons change | **Edit `PROJECT.md` (Markdown), then `./bootstrap.sh sync` — never hand-edit `project.json`, it's generated.** Goal must stay one sentence; log stack overrides as decisions |
 | `decisions.json` | Any non-trivial choice is made or reversed | Append-only; supersede, never edit history; mirror to `docs/decisions/` |
 | `roadmap.json` | Scope changes; items move status; phases planned | Every item has a horizon + priority; MVP-only in phase-0 |
 | `kpis.json` | A KPI is defined/changed/retired | Instrumentation + owner required |
@@ -27,7 +27,8 @@ files validate against their schema in `.ai/schemas/`. Always set `meta.last_upd
 4. Note regressions in `memory.json` and, if actionable, `tech-debt.json`.
 
 ## Integrity rules
-- Replace literal `REPLACE_*` placeholders on project init.
+- Replace literal `REPLACE_*` placeholders on project init. For identity fields, edit `PROJECT.md` and run
+  `./bootstrap.sh sync` — do not edit `project.json` directly (it is regenerated and your edits are lost).
 - Never delete decision or memory history — supersede instead.
 - After any batch of edits, validate JSON (see `bootstrap.sh validate` / the verify step).
 - Prefer minimal diffs; one logical change per write where practical.

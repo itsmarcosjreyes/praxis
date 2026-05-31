@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-05-30",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 5
+    "next_id": 6
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
@@ -60,6 +60,18 @@
       "detail": "Added docs/architecture/overview.md as a required, gate-enforced file. check_release_gate.py now blocks releases unless the architecture doc exists, has no placeholders, and has real substance (file-based, can't be faked). Wired into CLAUDE.md Pre-Flight + release gates, rules/01, and the architecture README. See dec-003.",
       "links": {
         "decision": "dec-003",
+        "release": null,
+        "feature_doc": null
+      }
+    },
+    {
+      "id": "mem-005",
+      "date": "REPLACE_ISO_DATE",
+      "type": "milestone",
+      "title": "Project identity authored in Markdown (PROJECT.md -> project.json)",
+      "detail": "Added PROJECT.md as the human authoring surface and scripts/sync_project.py to compile it into .ai/state/project.json (still the machine source of truth). bootstrap.sh init copies PROJECT.md + runs sync; added `bootstrap.sh sync`; pre-commit regenerates + re-stages project.json so the two never drift. project.json is now generated \u2014 never hand-edited. See dec-004.",
+      "links": {
+        "decision": "dec-004",
         "release": null,
         "feature_doc": null
       }

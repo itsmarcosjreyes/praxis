@@ -7,6 +7,7 @@
 #   ./bootstrap.sh gate [dir]                          Check the release gate (status.json)
 #   ./bootstrap.sh hooks [dir]                         (Re)install git hooks (core.hooksPath -> .githooks)
 #   ./bootstrap.sh snapshot <release> [dir]            Append a KPI snapshot for a release tag
+#   ./bootstrap.sh sync [dir]                          Regenerate .ai/state/project.json from PROJECT.md
 #   ./bootstrap.sh new-feature <slug>                  Create docs/features/<slug>.feature.md from template
 #
 # Designed for the Claude VS Code extension: CLAUDE.md at the repo root is auto-loaded as instructions.
@@ -44,20 +45,26 @@ cmd_init() {
   echo "→ Copying baseline into: $target"
   # NOTE: .praxis-template and CHANGELOG.md are intentionally NOT copied — they belong to the baseline repo
   # only. Omitting .praxis-template means projects get the full, enforced release gate.
-  for item in CLAUDE.md README.md .gitignore .ai rules docs packs scripts .githooks .github lighthouserc.json bootstrap.sh; do
+  # PROJECT.md is the human authoring surface; project.json is generated from it by scripts/sync_project.py.
+  for item in CLAUDE.md README.md PROJECT.md .gitignore .ai rules docs packs scripts .githooks .github lighthouserc.json bootstrap.sh; do
     [ -e "$HERE/$item" ] && cp -R "$HERE/$item" "$target/"
   done
   stamp_dates "$target/.ai"
   stamp_dates "$target/docs"
   if [ -n "$name" ]; then
-    sed -i.bak "s/REPLACE_PROJECT_NAME/${name}/g" "$target/.ai/state/project.json" && rm -f "$target/.ai/state/project.json.bak"
+    # Stamp the name into the authoring Markdown; project.json is regenerated from it below.
+    sed -i.bak "s/REPLACE_PROJECT_NAME/${name}/g" "$target/PROJECT.md" && rm -f "$target/PROJECT.md.bak"
+  fi
+  # Generate project.json from PROJECT.md so the machine source-of-truth exists immediately.
+  if command -v python3 >/dev/null; then
+    python3 "$target/scripts/sync_project.py" --root "$target" || true
   fi
   install_hooks "$target"
   echo "✓ Baseline installed. Next steps:"
   echo "  1) git init (if needed), then: ./bootstrap.sh hooks ."
   echo "  2) Open $target in VS Code (CLAUDE.md auto-loads as Claude instructions)."
-  echo "  3) Fill .ai/state/project.json: name, slug, type, goal.one_sentence, mvp."
-  echo "  4) Add any packs to project.json -> active_packs (web-seo|mobile|ai-service|streaming)."
+  echo "  3) Fill in PROJECT.md: name, slug, type, goal, MVP, packs. (Edit the Markdown, NOT project.json.)"
+  echo "  4) Run: ./bootstrap.sh sync   (regenerates .ai/state/project.json from PROJECT.md)."
   echo "  5) Tell Claude: 'Run the Pre-Flight Protocol in CLAUDE.md.'"
 }
 
@@ -86,6 +93,11 @@ cmd_snapshot() {
   python3 "$dir/scripts/snapshot_kpis.py" --release "$release" --root "$dir" --reset-status
 }
 
+cmd_sync() {
+  local dir="${1:-$HERE}"
+  python3 "$dir/scripts/sync_project.py" --root "$dir"
+}
+
 cmd_new_feature() {
   local slug="${1:?Usage: bootstrap.sh new-feature <slug>}"
   local dest="$HERE/docs/features/${slug}.feature.md"
@@ -99,6 +111,7 @@ case "${1:-}" in
   gate)        shift; cmd_gate "$@";;
   hooks)       shift; cmd_hooks "$@";;
   snapshot)    shift; cmd_snapshot "$@";;
+  sync)        shift; cmd_sync "$@";;
   new-feature) shift; cmd_new_feature "$@";;
-  *) echo "Usage: $0 {init <dir> [name] | validate [dir] | gate [dir] | hooks [dir] | snapshot <release> [dir] | new-feature <slug>}"; exit 1;;
+  *) echo "Usage: $0 {init <dir> [name] | validate [dir] | gate [dir] | hooks [dir] | snapshot <release> [dir] | sync [dir] | new-feature <slug>}"; exit 1;;
 esac

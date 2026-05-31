@@ -3,6 +3,13 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.2.1] — 2026-05-31
+
+### Added
+- **README diagrams**: five Mermaid diagrams visualizing how Praxis operates — system at a glance, project
+  lifecycle, the feature inner loop, the enforcement layer, and Markdown→JSON identity authoring. They render
+  natively on GitHub (no image files) and sit right after "The core idea."
+
 ## [0.2.0] — 2026-05-30
 
 ### Added
@@ -12,6 +19,11 @@ All notable changes to Praxis are recorded here. Format loosely follows
   it can't be bypassed by flipping a flag. Shipped a canonical 10-section `overview.md` template (copied into
   every project by `bootstrap.sh init`); wired into CLAUDE.md Pre-Flight + release gates and `rules/01`.
   (dec-003 / ADR 0003)
+- **Markdown-first project setup**: `PROJECT.md` is now the human authoring surface for project identity
+  (name, goal, MVP, stack, packs). `scripts/sync_project.py` compiles it into `.ai/state/project.json` (still
+  the machine source of truth). `bootstrap.sh init` copies `PROJECT.md` and runs the sync; added
+  `bootstrap.sh sync`; the pre-commit hook regenerates and re-stages `project.json` so the Markdown and JSON
+  never drift. `project.json` is now GENERATED — edit the Markdown, not the JSON. (dec-004 / ADR 0004)
 - **Template exemption**: a `.praxis-template` marker lets the baseline repo skip the product release gate.
   `bootstrap.sh init` deliberately omits it (and `CHANGELOG.md`) so real projects always get the full gate,
   and now also copies `.gitignore` into new projects.
@@ -45,5 +57,6 @@ Initial baseline.
 - Known seam: per-KPI metric *values* require source config in `kpis.json → instrumentation.fetch`;
   unconfigured sources carry forward safely. Ratio-style KPIs may need a custom adapter (see `debt-002`).
 
+[0.2.1]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.1
 [0.2.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.0
 [0.1.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.1.0

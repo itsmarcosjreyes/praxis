@@ -1,10 +1,12 @@
 {
   "$schema": "../schemas/project.schema.json",
+  "_generated": "GENERATED FROM PROJECT.md by scripts/sync_project.py \u2014 edit the Markdown, then run ./bootstrap.sh sync. Do not hand-edit this file.",
   "meta": {
     "schema_version": "1.0.0",
     "created": "REPLACE_ISO_DATE",
     "last_updated": "REPLACE_ISO_DATE",
-    "updated_by": "agent|human"
+    "updated_by": "sync_project.py (from PROJECT.md)",
+    "source": "PROJECT.md"
   },
   "identity": {
     "name": "REPLACE_PROJECT_NAME",

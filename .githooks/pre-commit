@@ -1,20 +1,32 @@
 #!/usr/bin/env bash
-# Pre-commit hook — validates .ai/state/*.json against schemas before every commit.
+# Pre-commit hook — keep project.json in sync with PROJECT.md, then validate .ai/state/*.json.
 # Installed via: git config core.hooksPath .githooks   (bootstrap.sh init does this for you)
 #
-# Fast, always-on. Blocks the commit if any state file is invalid JSON, fails its schema,
-# or has duplicate IDs. Placeholders (REPLACE_*) are a warning here, not a block.
+# Fast, always-on. Regenerates project.json from PROJECT.md (so the Markdown is the thing you edit),
+# then blocks the commit if any state file is invalid JSON, fails its schema, or has duplicate IDs.
+# Placeholders (REPLACE_*) are a warning here, not a block.
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 PY="$(command -v python3 || true)"
 
 if [ -z "$PY" ]; then
-  echo "⚠ pre-commit: python3 not found; skipping state validation."
+  echo "⚠ pre-commit: python3 not found; skipping sync + state validation."
   exit 0
 fi
 
-# Only run if state files are staged or exist; cheap to just run when .ai/state exists.
+# 1) PROJECT.md is the source of truth for project identity — regenerate project.json from it and
+#    re-stage if it changed, so the Markdown and the JSON can never drift apart in a commit.
+if [ -f "$ROOT/PROJECT.md" ]; then
+  echo "→ pre-commit: syncing project.json from PROJECT.md ..."
+  "$PY" "$ROOT/scripts/sync_project.py" --root "$ROOT" >/dev/null || true
+  if ! git -C "$ROOT" diff --quiet -- .ai/state/project.json 2>/dev/null; then
+    git -C "$ROOT" add .ai/state/project.json
+    echo "  (project.json regenerated from PROJECT.md and re-staged)"
+  fi
+fi
+
+# 2) Validate the state files.
 if [ -d "$ROOT/.ai/state" ]; then
   echo "→ pre-commit: validating .ai/state ..."
   if ! "$PY" "$ROOT/scripts/validate_state.py" --root "$ROOT"; then

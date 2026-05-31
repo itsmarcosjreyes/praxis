@@ -172,9 +172,10 @@ When a project's needs diverge, choose the better tool and record why in `decisi
 
 ```
 CLAUDE.md                     ← you are here (master instructions)
+PROJECT.md                    ← human authoring surface for project identity → generates project.json
 .ai/
   state/                      ← SOURCE OF TRUTH (JSON, survives context compaction)
-    project.json              ← identity, one-sentence goal, MVP, horizons
+    project.json              ← identity, one-sentence goal, MVP, horizons (GENERATED from PROJECT.md)
     decisions.json            ← machine-readable decision log
     roadmap.json              ← growth plan by phase + horizons
     kpis.json                 ← KPI definitions + targets
@@ -199,13 +200,19 @@ lighthouserc.json             ← Core Web Vitals assertions (mirrors rules/06)
 bootstrap.sh                  ← copy this baseline into any new repo + install hooks
 ```
 
+> **Project identity is authored in `PROJECT.md`, not `project.json`.** `PROJECT.md` is the Markdown a human
+> edits (or drops in); `scripts/sync_project.py` compiles it into `.ai/state/project.json` (the machine
+> source of truth everything else reads). Run `./bootstrap.sh sync` after editing, or just commit — the
+> pre-commit hook regenerates and re-stages `project.json` automatically. Never hand-edit `project.json`.
+
 ---
 
 ## 14. Enforcement (the gates are machine-enforced, not just instructions)
 
 State integrity and the release gates are enforced by tooling, so they cannot silently drift:
 
-- **pre-commit hook** runs `scripts/validate_state.py` — invalid JSON, schema violations, or duplicate IDs
+- **pre-commit hook** regenerates `project.json` from `PROJECT.md` (via `scripts/sync_project.py`) and
+  re-stages it, then runs `scripts/validate_state.py` — invalid JSON, schema violations, or duplicate IDs
   block the commit.
 - **pre-push hook** runs `scripts/check_release_gate.py` when pushing a `v*` tag — a release is blocked
   unless `docs/architecture/overview.md` is filled in (file-based check), testing/security/deployment (and

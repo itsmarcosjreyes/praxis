@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 4
+    "next_id": 5
   },
   "decisions": [
     {
@@ -137,6 +137,50 @@
       "supersedes": null,
       "superseded_by": null,
       "adr_doc": "docs/decisions/0003-architecture-doc-gate.md"
+    },
+    {
+      "id": "dec-004",
+      "title": "Author project identity in PROJECT.md; generate project.json from it",
+      "status": "accepted",
+      "date": "REPLACE_ISO_DATE",
+      "author": "marcos@kineticmatrix.io",
+      "category": "process",
+      "goal_link": "Lowers the friction of starting a project (Markdown authoring vs hand-editing JSON) while keeping a machine-validated source of truth.",
+      "context": "bootstrap required editing .ai/state/project.json by hand \u2014 unfriendly and error-prone. But project.json must remain machine-readable: schemas validate it and CI greps it for active packs.",
+      "options_considered": [
+        {
+          "option": "Replace project.json with PROJECT.md entirely",
+          "pros": [
+            "one file",
+            "fully human"
+          ],
+          "cons": [
+            "breaks schema validation, CI grep, and agent JSON reconstruction"
+          ]
+        },
+        {
+          "option": "Author in PROJECT.md, generate project.json",
+          "pros": [
+            "friendly authoring",
+            "keeps machine SoT + all enforcement",
+            "no drift via pre-commit regen"
+          ],
+          "cons": [
+            "needs a parser/sync step"
+          ]
+        }
+      ],
+      "decision": "Add PROJECT.md as the human authoring surface and scripts/sync_project.py to compile it into project.json. bootstrap.sh init copies PROJECT.md and runs sync; `bootstrap.sh sync` regenerates on demand; pre-commit regenerates + re-stages so the two never drift. project.json is now GENERATED \u2014 never hand-edited.",
+      "tradeoff": "Introduces a Markdown->JSON parser (a small maintenance surface and a fixed heading contract) in exchange for friendlier authoring without losing any machine validation.",
+      "horizons": {
+        "short_term": "Projects are set up by editing Markdown, not JSON.",
+        "mid_term": "Lower onboarding friction; fewer malformed project.json files.",
+        "long_term": "Authoring surfaces can grow (more guided MD) without touching the machine contract."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0004-project-md-authoring.md"
     }
   ]
 }
