@@ -9,18 +9,23 @@ The canonical flow for any unit of work. Enforced by CLAUDE.md §2 (Pre-Flight) 
 4. Run the **Skill & Tool Audit** (`rules/07-skills-and-tools.md`). Update `skills-ledger.json`.
 5. Read `tech-debt.json`; pay down or note blocking debt.
 6. Identify decisions to be made → prepare to log them (`rules/02-state-management.md`).
-7. Plan parallelism; spin off subagents for independent tracks.
-8. Set `status.json → current_focus`, `phase`, `next_action`.
+7. Ensure `docs/architecture/overview.md` exists (create from template at project start) and still reflects
+   reality. It is a hard release gate — keep it honest as you go, not at the end.
+8. Plan parallelism; spin off subagents for independent tracks.
+9. Set `status.json → current_focus`, `phase`, `next_action`.
 
 ## B. Build
 1. Create/update the feature doc in `docs/features/` BEFORE coding (so any agent can resume).
 2. Log decisions as you make them (`decisions.json` + ADR mirror).
-3. Implement, keeping KPI instrumentation in scope (a feature that should move a KPI ships with its tracking).
-4. Record incurred debt immediately in `tech-debt.json`.
-5. Keep `status.json` current.
+3. Update `docs/architecture/overview.md` whenever the change alters components, data model, APIs, infra, or
+   dependencies. The architecture doc tracks reality, not intentions.
+4. Implement, keeping KPI instrumentation in scope (a feature that should move a KPI ships with its tracking).
+5. Record incurred debt immediately in `tech-debt.json`.
+6. Keep `status.json` current.
 
 ## C. Verify (release gate — hard stop)
-Run all applicable checklists and update `status.json → checklists.*`:
+Confirm the architecture doc, then run all applicable checklists and update `status.json → checklists.*`:
+- Architecture: `docs/architecture/overview.md` filled in, no placeholders, real substance (file-based gate)
 - Testing (`rules/03`), Security (`rules/04`), Deployment (`rules/05`)
 - If web-accessible: SEO + Page Speed (`rules/06`)
 

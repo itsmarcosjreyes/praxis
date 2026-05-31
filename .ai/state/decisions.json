@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 3
+    "next_id": 4
   },
   "decisions": [
     {
@@ -16,8 +16,26 @@
       "goal_link": "Ensures every project is built to the same standard, surviving context compaction.",
       "context": "Why this decision is needed; the forces at play.",
       "options_considered": [
-        { "option": "Ad-hoc per project", "pros": ["fast"], "cons": ["inconsistent", "no memory"] },
-        { "option": "Standardized JSON-backed operating system", "pros": ["repeatable", "agent-resumable"], "cons": ["upfront setup"] }
+        {
+          "option": "Ad-hoc per project",
+          "pros": [
+            "fast"
+          ],
+          "cons": [
+            "inconsistent",
+            "no memory"
+          ]
+        },
+        {
+          "option": "Standardized JSON-backed operating system",
+          "pros": [
+            "repeatable",
+            "agent-resumable"
+          ],
+          "cons": [
+            "upfront setup"
+          ]
+        }
       ],
       "decision": "Use the standardized baseline.",
       "tradeoff": "Adds upfront structure in exchange for long-term consistency and AI resumability.",
@@ -41,8 +59,28 @@
       "goal_link": "Makes the JSON-as-source-of-truth model machine-enforced rather than instruction-only, so state cannot silently drift.",
       "context": "The baseline relied on agents/humans remembering to update state and pass gates. Discipline alone is not deterministic; drift is inevitable at scale.",
       "options_considered": [
-        { "option": "Instruction-only (rules in CLAUDE.md)", "pros": ["zero setup"], "cons": ["non-deterministic", "drifts under context compaction"] },
-        { "option": "Git hooks + CI enforcement + automated snapshots", "pros": ["deterministic", "drift blocked at commit/merge/release", "bookkeeping automated"], "cons": ["small CI/runtime cost", "needs git + python"] }
+        {
+          "option": "Instruction-only (rules in CLAUDE.md)",
+          "pros": [
+            "zero setup"
+          ],
+          "cons": [
+            "non-deterministic",
+            "drifts under context compaction"
+          ]
+        },
+        {
+          "option": "Git hooks + CI enforcement + automated snapshots",
+          "pros": [
+            "deterministic",
+            "drift blocked at commit/merge/release",
+            "bookkeeping automated"
+          ],
+          "cons": [
+            "small CI/runtime cost",
+            "needs git + python"
+          ]
+        }
       ],
       "decision": "Add .githooks (pre-commit validate, pre-push gate on v* tags), CI workflows (state-validation, lighthouse-ci, kpi-snapshot), and scripts (validate_state, check_release_gate, snapshot_kpis).",
       "tradeoff": "Adds a python+git dependency and minor CI time in exchange for deterministic, self-enforcing state and zero-effort release bookkeeping.",
@@ -55,6 +93,50 @@
       "supersedes": null,
       "superseded_by": null,
       "adr_doc": "docs/decisions/0002-enforcement-layer.md"
+    },
+    {
+      "id": "dec-003",
+      "title": "Enforce a filled-in architecture description as a release gate",
+      "status": "accepted",
+      "date": "REPLACE_ISO_DATE",
+      "author": "marcos@kineticmatrix.io",
+      "category": "process",
+      "goal_link": "Guarantees every project ships a written architecture so any agent/human can understand the system without reading all the code.",
+      "context": "Projects drift into tribal knowledge when architecture lives only in code and people's heads. The baseline had an architecture docs folder but nothing required or verified a real description.",
+      "options_considered": [
+        {
+          "option": "status.json boolean flag",
+          "pros": [
+            "simple",
+            "fits checklist pattern"
+          ],
+          "cons": [
+            "self-reported; can be set true while the doc is empty"
+          ]
+        },
+        {
+          "option": "File-based gate on docs/architecture/overview.md",
+          "pros": [
+            "deterministic",
+            "cannot be gamed",
+            "the artifact IS the proof"
+          ],
+          "cons": [
+            "needs a content heuristic for 'real'"
+          ]
+        }
+      ],
+      "decision": "Add a file-based check to check_release_gate.py requiring docs/architecture/overview.md to exist, contain no template placeholders, and have real substance (>= ~600 non-whitespace chars). Ship a canonical overview.md template; wire it into Pre-Flight, Build, and the release gate.",
+      "tradeoff": "A content heuristic (length + placeholder scan) can't judge quality, only presence and effort, in exchange for a deterministic gate that can't be faked by flipping a flag.",
+      "horizons": {
+        "short_term": "Releases blocked until the architecture is actually written.",
+        "mid_term": "Every project carries a current, readable architecture map; faster agent onboarding.",
+        "long_term": "Portfolio-wide architectural legibility; less tribal knowledge as the system scales."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0003-architecture-doc-gate.md"
     }
   ]
 }

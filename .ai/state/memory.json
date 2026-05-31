@@ -4,11 +4,11 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-05-30",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 4
+    "next_id": 5
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
-    "where_we_are": "Shipped v0.1.1 on 2026-05-30.",
+    "where_we_are": "Current phase and what just shipped.",
     "whats_next": "The immediate next milestone.",
     "key_risks": []
   },
@@ -54,13 +54,13 @@
     },
     {
       "id": "mem-004",
-      "date": "2026-05-30",
-      "type": "release",
-      "title": "Released v0.1.1",
-      "detail": "KPI snapshot recorded. Off-track: none.",
+      "date": "REPLACE_ISO_DATE",
+      "type": "milestone",
+      "title": "Architecture description made a hard release gate",
+      "detail": "Added docs/architecture/overview.md as a required, gate-enforced file. check_release_gate.py now blocks releases unless the architecture doc exists, has no placeholders, and has real substance (file-based, can't be faked). Wired into CLAUDE.md Pre-Flight + release gates, rules/01, and the architecture README. See dec-003.",
       "links": {
-        "decision": null,
-        "release": "v0.1.1",
+        "decision": "dec-003",
+        "release": null,
         "feature_doc": null
       }
     }

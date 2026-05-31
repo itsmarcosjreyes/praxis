@@ -3,6 +3,24 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.2.0] — 2026-05-30
+
+### Added
+- **Architecture release gate**: `docs/architecture/overview.md` is now a required, file-based gate.
+  `scripts/check_release_gate.py` blocks `v*` releases unless the architecture doc exists, has no template
+  placeholders, and has real substance (≥ ~600 non-whitespace chars). The check inspects the file itself, so
+  it can't be bypassed by flipping a flag. Shipped a canonical 10-section `overview.md` template (copied into
+  every project by `bootstrap.sh init`); wired into CLAUDE.md Pre-Flight + release gates and `rules/01`.
+  (dec-003 / ADR 0003)
+- **Template exemption**: a `.praxis-template` marker lets the baseline repo skip the product release gate.
+  `bootstrap.sh init` deliberately omits it (and `CHANGELOG.md`) so real projects always get the full gate,
+  and now also copies `.gitignore` into new projects.
+
+### Planned (tracked, not yet shipped)
+- `tech-debt.json` `debt-002` — **ratio adapter for derived KPIs** (e.g. activation = numerator/denominator).
+  The current fetcher returns a single scalar per source; ratio-style KPIs still need manual values or
+  carry-forward. Targeted for a future release.
+
 ## [0.1.0] — 2026-05-30
 Initial baseline.
 
@@ -25,6 +43,7 @@ Initial baseline.
 ### Notes
 - Decisions recorded: `dec-001` (adopt baseline), `dec-002` (enforcement layer).
 - Known seam: per-KPI metric *values* require source config in `kpis.json → instrumentation.fetch`;
-  unconfigured sources carry forward safely. Ratio-style KPIs may need a custom adapter (see roadmap).
+  unconfigured sources carry forward safely. Ratio-style KPIs may need a custom adapter (see `debt-002`).
 
+[0.2.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.0
 [0.1.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.1.0

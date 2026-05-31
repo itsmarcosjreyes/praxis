@@ -6,11 +6,15 @@ Used by the pre-push hook (on tag pushes) and the kpi-snapshot CI workflow befor
 A release is blocked unless every required checklist has passed and the gate is explicitly open.
 
 Rules:
+  - docs/architecture/overview.md exists, has no template placeholders, and has real substance
   - checklists.testing.state    == "passed"
   - checklists.security.state   == "passed"
   - checklists.deployment.state == "passed"
   - checklists.seo_pagespeed.state in ("passed", "n/a")
   - release_gate_open == true
+
+The architecture check is FILE-BASED on purpose: a self-reported boolean could be flipped true while the
+doc stays empty. Verifying the actual file can't be gamed.
 
 Exit code 0 = gate open, 1 = blocked.
 
@@ -36,6 +40,27 @@ def find_root(start):
         d = parent
 
 
+# Minimum body length (chars, excluding whitespace) for the architecture doc to count as "real".
+ARCH_MIN_CHARS = 600
+ARCH_PATH = os.path.join("docs", "architecture", "overview.md")
+
+
+def check_architecture(root):
+    """Every project must ship a real architecture description before release. File-based and
+    deterministic — returns a failure string, or None if the doc exists and is genuinely filled in."""
+    path = os.path.join(root, ARCH_PATH)
+    if not os.path.exists(path):
+        return f"architecture doc missing: {ARCH_PATH} (describe the system before release)"
+    with open(path) as f:
+        text = f.read()
+    if "REPLACE_" in text or "<FILL" in text or "<...>" in text:
+        return f"architecture doc still has template placeholders: {ARCH_PATH} (fill it in)"
+    body = "".join(text.split())
+    if len(body) < ARCH_MIN_CHARS:
+        return f"architecture doc too thin: {ARCH_PATH} (~{len(body)} chars; describe components, data, infra, scaling)"
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.environ.get("PRAXIS_ROOT", "."))
@@ -59,6 +84,12 @@ def main():
         status = json.load(f)
 
     failures = []
+
+    # Architecture description is a hard, file-based requirement for every project.
+    arch_fail = check_architecture(root)
+    if arch_fail:
+        failures.append(arch_fail)
+
     checklists = status.get("checklists", {})
 
     for gate in ("testing", "security", "deployment"):
@@ -80,10 +111,10 @@ def main():
         print(f"{RED}✗ RELEASE GATE CLOSED:{RESET}")
         for fl in failures:
             print(f"{RED}  - {fl}{RESET}")
-        print(f"{RED}Resolve gates (rules/03-05, 06 for web) and set release_gate_open=true.{RESET}")
+        print(f"{RED}Resolve gates (rules/03-05, 06 for web; architecture doc per rules/01) and set release_gate_open=true.{RESET}")
         return 1
 
-    print(f"{GREEN}✓ RELEASE GATE OPEN — all checklists passed.{RESET}")
+    print(f"{GREEN}✓ RELEASE GATE OPEN — architecture doc present; all checklists passed.{RESET}")
     return 0
 
 

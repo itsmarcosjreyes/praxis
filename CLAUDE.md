@@ -46,8 +46,10 @@ Execute in order. Do not skip. This is enforced — see `rules/01-workflow.md`.
    on top of it.
 6. **Decision check.** If this work involves a non-trivial choice (architecture, dependency, data model,
    vendor, pattern), it requires a decision record — see §4.
-7. **Plan parallelism.** Decide what can be parallelized and spin off subagents (see §7).
-8. **Update status.** Set `status.json → current_focus` and `phase` so any agent picking up later knows the
+7. **Architecture doc.** Ensure `docs/architecture/overview.md` exists and reflects reality. Create it from
+   the template at project start and keep it current as the design evolves — it is a hard release gate.
+8. **Plan parallelism.** Decide what can be parallelized and spin off subagents (see §7).
+9. **Update status.** Set `status.json → current_focus` and `phase` so any agent picking up later knows the
    live state.
 
 ---
@@ -127,6 +129,7 @@ release.
 
 A change is NOT "done" until ALL of these pass and the relevant JSON is updated:
 
+- [ ] Architecture described in `docs/architecture/overview.md` (no placeholders, real substance) — gate-enforced
 - [ ] Testing checklist passed (`rules/03-testing-checklist.md`) → `status.json → checklists.testing`
 - [ ] Security checklist passed (`rules/04-security-checklist.md`) → `status.json → checklists.security`
 - [ ] Deployment checklist passed (`rules/05-deployment-checklist.md`) → `status.json → checklists.deployment`
@@ -205,7 +208,8 @@ State integrity and the release gates are enforced by tooling, so they cannot si
 - **pre-commit hook** runs `scripts/validate_state.py` — invalid JSON, schema violations, or duplicate IDs
   block the commit.
 - **pre-push hook** runs `scripts/check_release_gate.py` when pushing a `v*` tag — a release is blocked
-  unless testing/security/deployment (and SEO for web) checklists are `passed` and `release_gate_open: true`.
+  unless `docs/architecture/overview.md` is filled in (file-based check), testing/security/deployment (and
+  SEO for web) checklists are `passed`, and `release_gate_open: true`.
 - **CI** mirrors this on every push/PR (`state-validation.yml`), enforces Core Web Vitals on web projects
   (`lighthouse-ci.yml`), and on a `v*` tag automatically writes the KPI snapshot, appends a `memory.json`
   entry, resets `status.json`, and commits it back (`kpi-snapshot.yml`).
