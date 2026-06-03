@@ -2,14 +2,14 @@
   "$schema": "../schemas/status.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "2026-05-31",
+    "last_updated": "2026-06-03",
     "updated_by": "agent|human",
     "note": "Live snapshot of where the project is RIGHT NOW. Update at the start and end of every work session."
   },
   "phase": "phase-0",
   "current_focus": "Describe the single thing being worked on now.",
   "active_feature_doc": "",
-  "current_release": "v0.2.0",
+  "current_release": "v0.3.0",
   "health": "green",
   "blockers": [],
   "checklists": {

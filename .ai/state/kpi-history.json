@@ -2,7 +2,7 @@
   "$schema": "../schemas/kpi-history.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "2026-05-31",
+    "last_updated": "2026-06-03",
     "note": "One snapshot object per release. Append-only. Compute deltas vs the previous release."
   },
   "snapshots": [
@@ -63,6 +63,35 @@
         }
       ],
       "notes": "Auto-snapshot for v0.2.0."
+    },
+    {
+      "release": "v0.3.0",
+      "date": "2026-06-03",
+      "git_ref": "352902739ea0ff0d4de110a36b9c8febfdd3cc71",
+      "values": [
+        {
+          "kpi_id": "kpi-001",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 40,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-002",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 2.5,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-003",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 100,
+          "on_track": null
+        }
+      ],
+      "notes": "Auto-snapshot for v0.3.0."
     }
   ]
 }
