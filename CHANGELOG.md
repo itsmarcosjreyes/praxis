@@ -3,6 +3,17 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.3.0] — 2026-06-02
+
+### Added
+- **Export contract for dashboards**: `scripts/export_state.py` emits `praxis-export.json` — a stable,
+  versioned projection of all project state for an admin/portfolio dashboard. Independent
+  `export_contract_version`; every record namespaced `uid = "<slug>:<id>"` for portfolio-safe tables;
+  precomputed `summary` rollups (open debt by impact, KPI on-track counts, gate/health, counts); and a
+  flattened `links[]` relationship graph. Schema at `.ai/schemas/praxis-export.schema.json`; `bootstrap.sh
+  export` command; artifact gitignored by default. The dashboard is a separate project consuming the
+  contract (static read / Supabase projection / release asset). (dec-005 / ADR 0005, roadmap `item-100`)
+
 ## [0.2.1] — 2026-05-31
 
 ### Added
@@ -57,6 +68,7 @@ Initial baseline.
 - Known seam: per-KPI metric *values* require source config in `kpis.json → instrumentation.fetch`;
   unconfigured sources carry forward safely. Ratio-style KPIs may need a custom adapter (see `debt-002`).
 
+[0.3.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.3.0
 [0.2.1]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.1
 [0.2.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.0
 [0.1.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.1.0

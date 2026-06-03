@@ -11,6 +11,7 @@ state files can't silently drift and release bookkeeping happens automatically.
 | `snapshot_kpis.py` | Appends a per-release KPI snapshot (deltas + on_track), adds a `memory.json` release entry, optionally resets `status.json` | `kpi-snapshot.yml` |
 | `fetch_metrics.py` | Reads `kpis.json`, queries each KPI's source (Amplitude/Supabase/CrUX), writes `metrics.json` | `kpi-snapshot.yml` (via `fetch_metrics.sh`) |
 | `fetch_metrics.sh` | CI wrapper for the fetcher: reports configured sources, runs it, never blocks a release | `kpi-snapshot.yml` |
+| `export_state.py` | Emits `praxis-export.json` — a stable, versioned projection of all state for dashboards/portfolio rollups | `bootstrap.sh export`, dashboard CI |
 
 ## Local use
 ```bash
@@ -19,7 +20,29 @@ python3 scripts/validate_state.py --strict   # fail on placeholders (CI mode)
 python3 scripts/check_release_gate.py        # is the release gate open?
 python3 scripts/snapshot_kpis.py --release v1.2.0 --reset-status
 python3 scripts/snapshot_kpis.py --release v1.2.0 --values metrics.json   # with real metric values
+python3 scripts/export_state.py --root . --pretty   # emit praxis-export.json (dashboard contract)
 ```
+
+## The export contract (dashboards & portfolio rollups)
+`export_state.py` produces **`praxis-export.json`** — a stable, versioned projection of a project's entire
+`.ai/state`, designed so an external dashboard never couples to Praxis internals. Run it with
+`./bootstrap.sh export` (or `python3 scripts/export_state.py --root . --pretty`).
+
+Why it's a *contract*, not just a dump:
+- **`export_contract_version`** is independent of project `schema_version`. Internal schemas can evolve;
+  the exporter keeps emitting this shape. Consumers ignore unknown fields. Additive changes only.
+- **Portfolio-safe identity**: every record carries `uid = "<slug>:<id>"`, so many projects share one table
+  with no ID collisions (`dec-001` exists in every repo; `aurora:dec-001` is unique).
+- **Precomputed `summary`**: open debt by impact, KPI on-track counts, latest release, gate status, health,
+  entity counts — so a static dashboard needs zero aggregation.
+- **`links[]` relationship graph**: flattens cross-references already in state (memory→decision,
+  debt→decision, roadmap→kpi/profitability, profitability→kpi, decision supersede chains) into
+  `{from, rel, to}` edges a UI can draw directly.
+
+Schema: `.ai/schemas/praxis-export.schema.json`. The artifact is gitignored by default (derived, like
+`metrics.json`); a "static read from git" dashboard can un-ignore it to commit it. The dashboard is its own
+separate project — consumption patterns: (a) static read of the JSON from git, (b) upsert into Supabase on
+release for cross-project queries, (c) publish as a release asset.
 
 ## Git hooks
 Hooks live in `.githooks/` and are activated with `git config core.hooksPath .githooks`

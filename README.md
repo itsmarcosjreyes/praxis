@@ -208,6 +208,26 @@ Then tell Claude: **"Run the Pre-Flight Protocol in CLAUDE.md."**
 13. A built-in **path to profitability** (email capture, cross-marketing, cross-sell) tied to KPIs.
 14. A **marketing plan** that fuels growth and ties back to KPIs.
 
+## Portfolio dashboard (the export contract)
+Because all project state is normalized, typed JSON, you can point an admin dashboard at it without scraping.
+`./bootstrap.sh export` emits **`praxis-export.json`** — a stable, versioned projection (`export_contract_version`)
+with portfolio-safe `uid`s (`<slug>:<id>`), precomputed rollups, and a flattened relationship graph. A
+dashboard is a **separate project** that consumes this contract — read it straight from git, upsert it into
+Supabase on each release for cross-project queries, or publish it as a release asset. Praxis can evolve its
+internal schemas freely as long as the exporter keeps emitting the contract. Schema:
+`.ai/schemas/praxis-export.schema.json`; details in `scripts/README.md`.
+
+```mermaid
+flowchart LR
+    subgraph Repos["Each Praxis project (its own repo)"]
+        S1[".ai/state/*.json"] --> EX1["export_state.py"] --> J1["praxis-export.json<br/>(slug-namespaced)"]
+    end
+    J1 -->|"static read from git"| DASH
+    J1 -->|"upsert on release"| SUP["Supabase<br/>(projection, keyed by uid)"]
+    SUP --> DASH["📊 Admin dashboard<br/>(separate project)"]
+    SUP -.->|"regression alert"| N8N["n8n / notify"]
+```
+
 ## Maintaining the baseline
 Version it. When you improve a rule or schema here, new projects get it on their next `init`. Existing
 projects can re-copy individual files. Treat this repo as the canonical template for the whole portfolio.

@@ -2,6 +2,10 @@
 # Transient metric payload produced by scripts/fetch_metrics.* (regenerated each release)
 metrics.json
 
+# Derived dashboard contract produced by scripts/export_state.py (regenerated on demand / by CI).
+# If your dashboard reads it directly from git (the "static read" pattern), delete this line to commit it.
+praxis-export.json
+
 # Python
 __pycache__/
 *.py[cod]

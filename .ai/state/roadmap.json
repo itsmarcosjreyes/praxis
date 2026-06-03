@@ -13,7 +13,9 @@
       "status": "in-progress",
       "goal": "Ship the smallest thing that delivers the one-sentence goal.",
       "target_date": "",
-      "kpi_targets": ["kpi-001"],
+      "kpi_targets": [
+        "kpi-001"
+      ],
       "items": [
         {
           "id": "item-001",
@@ -36,7 +38,19 @@
       "goal": "Expand on validated MVP; add growth loops.",
       "target_date": "",
       "kpi_targets": [],
-      "items": []
+      "items": [
+        {
+          "id": "item-100",
+          "title": "Portfolio admin dashboard (separate project) consuming praxis-export",
+          "feature_doc": "",
+          "priority": "P2",
+          "status": "todo",
+          "estimate": "",
+          "depends_on": [],
+          "unlocks": [],
+          "profitability_link": null
+        }
+      ]
     },
     {
       "id": "phase-2",

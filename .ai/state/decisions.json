@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 5
+    "next_id": 6
   },
   "decisions": [
     {
@@ -181,6 +181,52 @@
       "supersedes": null,
       "superseded_by": null,
       "adr_doc": "docs/decisions/0004-project-md-authoring.md"
+    },
+    {
+      "id": "dec-005",
+      "title": "Add a stable, versioned export contract (praxis-export.json) for dashboards",
+      "status": "accepted",
+      "date": "REPLACE_ISO_DATE",
+      "author": "marcos@kineticmatrix.io",
+      "category": "architecture",
+      "goal_link": "Lets an admin dashboard visualize KPIs, decisions, tech debt, roadmap, and health across the portfolio without coupling to Praxis internals.",
+      "context": "Per-project state is normalized JSON but lives per-repo with project-local IDs and an evolving internal schema. A dashboard reading internals directly would break on every schema change and collide on shared IDs.",
+      "options_considered": [
+        {
+          "option": "Dashboard reads .ai/state/*.json directly",
+          "pros": [
+            "no new code"
+          ],
+          "cons": [
+            "couples UI to internal schema",
+            "ID collisions across projects",
+            "breaks on schema evolution"
+          ]
+        },
+        {
+          "option": "Stable versioned export contract",
+          "pros": [
+            "decouples consumers",
+            "uid namespacing",
+            "precomputed rollups + graph",
+            "schema can evolve"
+          ],
+          "cons": [
+            "one more generated artifact + schema to maintain"
+          ]
+        }
+      ],
+      "decision": "Add scripts/export_state.py emitting praxis-export.json: export_contract_version independent of project schema_version, every record namespaced uid='<slug>:<id>', precomputed summary rollups, and a flattened links[] relationship graph. Schema at .ai/schemas/praxis-export.schema.json; `bootstrap.sh export` command; artifact gitignored by default. The dashboard is a SEPARATE project consuming this contract (static read, Supabase projection, or release asset).",
+      "tradeoff": "Adds one generated artifact and a contract schema to maintain, in exchange for a dashboard layer that never breaks when internal state schemas evolve.",
+      "horizons": {
+        "short_term": "`bootstrap.sh export` produces a dashboard-ready file per project.",
+        "mid_term": "A Supabase projection enables cross-project portfolio queries and regression alerts.",
+        "long_term": "Portfolio-wide operational intelligence over all projects without coupling to Praxis internals."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0005-export-contract.md"
     }
   ]
 }

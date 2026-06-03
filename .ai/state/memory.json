@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-05-30",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 6
+    "next_id": 7
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
@@ -72,6 +72,18 @@
       "detail": "Added PROJECT.md as the human authoring surface and scripts/sync_project.py to compile it into .ai/state/project.json (still the machine source of truth). bootstrap.sh init copies PROJECT.md + runs sync; added `bootstrap.sh sync`; pre-commit regenerates + re-stages project.json so the two never drift. project.json is now generated \u2014 never hand-edited. See dec-004.",
       "links": {
         "decision": "dec-004",
+        "release": null,
+        "feature_doc": null
+      }
+    },
+    {
+      "id": "mem-006",
+      "date": "REPLACE_ISO_DATE",
+      "type": "milestone",
+      "title": "Export contract added (praxis-export.json) for dashboards",
+      "detail": "scripts/export_state.py emits a stable, versioned projection of all state: export_contract_version, uid='<slug>:<id>' namespacing, precomputed summary rollups, and a flattened links[] relationship graph. Schema at .ai/schemas/praxis-export.schema.json; `bootstrap.sh export`; gitignored by default. Foundation for a separate admin dashboard (static read / Supabase projection). See dec-005.",
+      "links": {
+        "decision": "dec-005",
         "release": null,
         "feature_doc": null
       }

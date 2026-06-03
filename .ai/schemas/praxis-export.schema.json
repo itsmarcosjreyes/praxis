@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "praxis-export.schema.json",
+  "title": "Praxis Export Contract",
+  "description": "Stable, versioned projection of a project's .ai/state for external consumers (dashboards, portfolio rollups). Independent of internal project schema_version. Additive only — consumers must ignore unknown fields.",
+  "type": "object",
+  "required": ["export_contract_version", "generated_at", "project", "summary"],
+  "properties": {
+    "export_contract_version": { "type": "string", "description": "SemVer of THIS contract, not the project schema." },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "project": {
+      "type": "object",
+      "required": ["slug"],
+      "properties": {
+        "slug": { "type": "string", "description": "Portfolio-unique identity; namespaces every record." },
+        "name": { "type": ["string", "null"] },
+        "type": { "type": ["string", "null"] },
+        "owner": { "type": ["string", "null"] },
+        "repository": { "type": ["string", "null"] },
+        "production_url": { "type": ["string", "null"] },
+        "schema_version": { "type": ["string", "null"] },
+        "one_sentence_goal": { "type": ["string", "null"] },
+        "active_packs": { "type": "array", "items": { "type": "string" } },
+        "stack": { "type": "object" },
+        "mvp_status": { "type": ["string", "null"] },
+        "horizons": { "type": "object" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Precomputed rollups so a static dashboard needs no aggregation.",
+      "properties": {
+        "health": { "type": ["string", "null"] },
+        "phase": { "type": ["string", "null"] },
+        "current_release": { "type": ["string", "null"] },
+        "release_gate_open": { "type": ["boolean", "null"] },
+        "blockers_count": { "type": "integer" },
+        "checklists": { "type": "object" },
+        "counts": { "type": "object" },
+        "tech_debt_open_by_impact": { "type": "object" },
+        "roadmap_items_by_status": { "type": "object" },
+        "latest_release": { "type": ["string", "null"] },
+        "kpi_status": { "type": "object" },
+        "primary_kpi_id": { "type": ["string", "null"] }
+      }
+    },
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
+    "kpis": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
+    "kpi_history": { "type": "array", "items": { "type": "object" } },
+    "tech_debt": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
+    "roadmap": { "type": "object" },
+    "skills_ledger": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
+    "profitability": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
+    "memory": { "type": "object" },
+    "status": { "type": "object" },
+    "links": {
+      "type": "array",
+      "description": "Flattened relationship graph (edges) for relationship/graph views.",
+      "items": {
+        "type": "object",
+        "required": ["from", "rel", "to"],
+        "properties": {
+          "from": { "$ref": "#/$defs/nodeRef" },
+          "rel": { "type": "string" },
+          "to": { "$ref": "#/$defs/nodeRef" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "uidRecord": {
+      "type": "object",
+      "description": "A state record with its portfolio-unique uid = '<slug>:<id>'.",
+      "required": ["id", "uid"],
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string", "pattern": "^.+:.+$" }
+      }
+    },
+    "nodeRef": {
+      "type": "object",
+      "required": ["type", "id", "uid"],
+      "properties": {
+        "type": { "type": "string" },
+        "id": { "type": "string" },
+        "uid": { "type": "string" }
+      }
+    }
+  }
+}

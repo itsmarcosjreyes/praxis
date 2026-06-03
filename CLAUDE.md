@@ -193,7 +193,7 @@ docs/
   architecture/               ← system architecture notes
   decisions/                  ← human-readable ADRs (mirror of decisions.json)
 packs/                        ← opt-in overlays: web-seo, mobile, ai-service, streaming
-scripts/                      ← enforcement & automation (validate_state, check_release_gate, snapshot_kpis)
+scripts/                      ← enforcement & automation (validate_state, check_release_gate, snapshot_kpis, export_state)
 .githooks/                    ← pre-commit (validate state), pre-push (gate on v* tags)
 .github/workflows/            ← CI: state-validation, lighthouse-ci, kpi-snapshot
 lighthouserc.json             ← Core Web Vitals assertions (mirrors rules/06)
