@@ -11,6 +11,11 @@ Checks:
   3. IDs within each file's arrays are unique.
   4. (--strict) No leftover REPLACE_* placeholders remain (drift in a real project).
 
+Template exemption: the Praxis baseline repo is a TEMPLATE and intentionally keeps REPLACE_* placeholders in
+its seed state. A `.praxis-template` marker at the repo root downgrades strict placeholder failures to
+warnings, so the same workflow (`validate_state.py --strict`) passes on the baseline and stays strict for
+real projects (which must NOT have the marker). JSON/schema/duplicate-ID checks always apply.
+
 Exit code 0 = pass, 1 = fail.
 
 Usage:
@@ -66,6 +71,13 @@ def main():
     if not os.path.isdir(state_dir):
         print(f"{RED}✗ No .ai/state directory found under {root}{RESET}")
         return 1
+
+    # Template exemption: the baseline repo keeps REPLACE_* placeholders on purpose. When the marker is
+    # present, --strict placeholders become warnings (not failures). Real projects have no marker.
+    is_template = os.path.exists(os.path.join(root, ".praxis-template"))
+    strict_placeholders = args.strict and not is_template
+    if args.strict and is_template:
+        print(f"{YELLOW}  (.praxis-template present — strict placeholder check downgraded to warnings for the baseline.){RESET}")
 
     try:
         import jsonschema  # type: ignore
@@ -124,13 +136,13 @@ def main():
 
         # Placeholders
         placeholder = "REPLACE_" in raw
-        if placeholder and args.strict:
+        if placeholder and strict_placeholders:
             print(f"{RED}✗ {name}: contains REPLACE_* placeholder(s) (run bootstrap init / fill in values){RESET}")
             ok = False
         elif placeholder:
             print(f"{YELLOW}⚠ {name}: contains REPLACE_* placeholder(s){RESET}")
 
-        if not dup_found and not (placeholder and args.strict):
+        if not dup_found and not (placeholder and strict_placeholders):
             print(f"{GREEN}✓ {name}: {schema_msg}{RESET}")
 
     print()

@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-06-03",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 7
+    "next_id": 9
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
@@ -99,6 +99,18 @@
         "release": "v0.3.0",
         "feature_doc": null
       }
+    },
+    {
+      "id": "mem-008",
+      "date": "REPLACE_ISO_DATE",
+      "type": "learning",
+      "title": "Fix: State Validation CI failed on the baseline itself",
+      "detail": "state-validation.yml ran validate_state.py --strict, which fails on REPLACE_* placeholders. The Praxis baseline is a TEMPLATE that intentionally keeps placeholders, so CI failed on every push. Fix: validate_state.py now honors the .praxis-template marker \u2014 when present, --strict placeholder failures downgrade to warnings (JSON/schema/dup-ID checks still apply). Real projects (no marker) stay strictly enforced. Same lesson as the release-gate exemption: the tool that enforces discipline must know when it is operating on the template vs a product.",
+      "links": {
+        "decision": null,
+        "release": null,
+        "feature_doc": null
+      }
     }
   ],
   "learnings": [
@@ -106,6 +118,12 @@
       "id": "learn-001",
       "lesson": "EXAMPLE: a non-obvious thing learned that should not be re-learned the hard way.",
       "context": "",
+      "date": "REPLACE_ISO_DATE"
+    },
+    {
+      "id": "learn-002",
+      "lesson": "Any check that enforces 'real project' discipline (strict placeholder validation, release gates) must distinguish template vs product via the .praxis-template marker, or it will fail on the baseline repo itself.",
+      "context": "State Validation CI failed on every Praxis push because --strict rejects the template's intentional REPLACE_* placeholders.",
       "date": "REPLACE_ISO_DATE"
     }
   ]

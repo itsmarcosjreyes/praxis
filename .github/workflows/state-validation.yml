@@ -22,6 +22,7 @@ jobs:
         run: pip install jsonschema
 
       - name: Validate state files (strict)
-        # --strict fails on leftover REPLACE_* placeholders, which are drift in a real project.
-        # Remove --strict on the template repo itself, where placeholders are expected.
+        # --strict fails on leftover REPLACE_* placeholders (drift in a real project). The baseline repo
+        # carries a `.praxis-template` marker, which downgrades that check to warnings here — so this same
+        # workflow passes on the template and stays strict for real projects (which have no marker).
         run: python3 scripts/validate_state.py --strict --root .

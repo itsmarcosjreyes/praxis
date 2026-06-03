@@ -3,6 +3,15 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.3.1] — 2026-06-03
+
+### Fixed
+- **State Validation CI failed on the baseline itself**: `state-validation.yml` runs
+  `validate_state.py --strict`, which rejects `REPLACE_*` placeholders — but the Praxis template *intentionally*
+  keeps them, so CI failed on every push. `validate_state.py` now honors the `.praxis-template` marker: when
+  present, strict placeholder failures downgrade to warnings (JSON/schema/duplicate-ID checks still apply).
+  Real projects (no marker) remain strictly enforced. (mem-008 / learn-002)
+
 ## [0.3.0] — 2026-06-02
 
 ### Added
@@ -68,6 +77,7 @@ Initial baseline.
 - Known seam: per-KPI metric *values* require source config in `kpis.json → instrumentation.fetch`;
   unconfigured sources carry forward safely. Ratio-style KPIs may need a custom adapter (see `debt-002`).
 
+[0.3.1]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.3.1
 [0.3.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.3.0
 [0.2.1]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.1
 [0.2.0]: https://github.com/itsmarcosjreyes/praxis/releases/tag/v0.2.0
