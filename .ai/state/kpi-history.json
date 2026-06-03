@@ -92,6 +92,35 @@
         }
       ],
       "notes": "Auto-snapshot for v0.3.0."
+    },
+    {
+      "release": "v0.3.1",
+      "date": "2026-06-03",
+      "git_ref": "d5ca7acb5897e8fdf7be6c9a00b55909b09dbfb5",
+      "values": [
+        {
+          "kpi_id": "kpi-001",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 40,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-002",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 2.5,
+          "on_track": null
+        },
+        {
+          "kpi_id": "kpi-003",
+          "value": null,
+          "delta_vs_prev": null,
+          "target": 100,
+          "on_track": null
+        }
+      ],
+      "notes": "Auto-snapshot for v0.3.1."
     }
   ]
 }

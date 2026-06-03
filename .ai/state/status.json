@@ -9,7 +9,7 @@
   "phase": "phase-0",
   "current_focus": "Describe the single thing being worked on now.",
   "active_feature_doc": "",
-  "current_release": "v0.3.0",
+  "current_release": "v0.3.1",
   "health": "green",
   "blockers": [],
   "checklists": {
