@@ -1,0 +1,61 @@
+{
+  "$schema": "../schemas/viability.schema.json",
+  "meta": {
+    "schema_version": "1.0.0",
+    "last_updated": "REPLACE_ISO_DATE",
+    "updated_by": "agent|human",
+    "note": "Crucible audit state — the machine-readable verdict on whether the idea in PROJECT.md deserves to be built. Written by the Crucible protocol (rules/09-crucible.md); staleness detected by scripts/check_viability.py.",
+    "next_id": 1
+  },
+  "config": {
+    "revalidate_after_days": 45,
+    "kpi_offtrack_streak": 2
+  },
+  "current": {
+    "id": "aud-000",
+    "date": "",
+    "fingerprint": "",
+    "audited_mvp_status": "",
+    "verdict": "not-run",
+    "confidence": "",
+    "one_line_call": "",
+    "why": "",
+    "biggest_risk": "",
+    "biggest_upside": "",
+    "money_read": {
+      "price_hypothesis": "",
+      "time_to_first_dollar": "",
+      "ship_speed_read": ""
+    },
+    "scores": {},
+    "council": [],
+    "assumptions": [],
+    "mvp_adjustments": [],
+    "reshape": {
+      "required": false,
+      "pivot": "",
+      "applied": false,
+      "applied_date": null,
+      "rejected_decision_link": null
+    },
+    "kill_override": {
+      "decision_link": null,
+      "reason": ""
+    },
+    "validation_test": {
+      "hypothesis": "",
+      "method": "",
+      "success_criteria": "",
+      "window_hours": 48,
+      "status": "not-defined",
+      "started": null,
+      "due": null,
+      "completed": null,
+      "result": "",
+      "outcome": "",
+      "action_taken": ""
+    }
+  },
+  "history": [],
+  "triggers_log": []
+}

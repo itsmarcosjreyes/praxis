@@ -36,6 +36,7 @@ flowchart TB
 
     subgraph State["🗄️ .ai/state/ — source of truth (JSON)"]
         PJ["project.json"]
+        VIA["viability.json"]
         DEC["decisions.json"]
         ROAD["roadmap.json"]
         KPI["kpis.json"]
@@ -50,6 +51,7 @@ flowchart TB
     subgraph Enforce["⚙️ Enforcement (scripts + hooks + CI)"]
         SYNC["sync_project.py"]
         VAL["validate_state.py"]
+        VIAC["check_viability.py"]
         GATE["check_release_gate.py"]
         SNAP["snapshot_kpis.py"]
         FETCH["fetch_metrics.py"]
@@ -78,16 +80,21 @@ The path a project takes. Pre-Flight runs before every unit of work; the release
 flowchart TD
     A["bootstrap.sh init"] --> B["Edit PROJECT.md<br/>(goal, MVP, stack, packs)"]
     B --> C["bootstrap.sh sync<br/>→ project.json"]
-    C --> D{{"Pre-Flight Protocol<br/>(rules/01)"}}
+    C --> CR{{"THE CRUCIBLE (rules/09)<br/>5-persona council + Judge"}}
+    CR -->|"KILL"| KILLED(["Walk away<br/>(or logged override decision)"])
+    CR -->|"RESHAPE"| B
+    CR -->|"GO + 48-72h validation test"| D{{"Pre-Flight Protocol<br/>(rules/01)"}}
     D --> D1["Load state · confirm one-sentence goal"]
+    D --> DV["check_viability.py<br/>idea still audited & current?"]
     D --> D2["Locate horizon · MVP scope"]
     D --> D3["Skill & tool audit → skills-ledger.json"]
     D --> D4["Check tech-debt.json"]
     D --> D5["Ensure architecture/overview.md exists"]
-    D1 & D2 & D3 & D4 & D5 --> E["BUILD<br/>feature docs · decisions · code · KPI instrumentation"]
+    DV -.->|"idea drifted / test overdue<br/>/ KPI off-track"| CR
+    D1 & DV & D2 & D3 & D4 & D5 --> E["BUILD<br/>feature docs · decisions · code · KPI instrumentation"]
     E --> F{{"Release gate<br/>(hard stop)"}}
     F -->|"any check fails"| E
-    F -->|"architecture ✓ · testing ✓ · security ✓<br/>deploy ✓ · SEO ✓/n-a · gate open"| G["Tag v* release"]
+    F -->|"viability ✓ · architecture ✓ · testing ✓ · security ✓<br/>deploy ✓ · SEO ✓/n-a · gate open"| G["Tag v* release"]
     G --> H["CI: snapshot KPIs · memory entry<br/>reset status · commit back"]
     H --> I(["Shipped — KPIs tracked release-over-release"])
     I -.->|"next feature / next version"| D
@@ -166,11 +173,13 @@ flowchart LR
 - **`PROJECT.md`** — the human authoring surface for the project's identity (name, goal, MVP, stack, packs).
   Edit this, then `./bootstrap.sh sync` compiles it into `.ai/state/project.json`. **You edit the Markdown;
   the JSON is generated.**
-- **`.ai/state/`** — 10 JSON source-of-truth files: project, decisions, roadmap, kpis, kpi-history,
-  tech-debt, skills-ledger, memory, profitability, status. (`project.json` is generated from `PROJECT.md`.)
+- **`.ai/state/`** — 11 JSON source-of-truth files: project, viability (Crucible verdict), decisions,
+  roadmap, kpis, kpi-history, tech-debt, skills-ledger, memory, profitability, status. (`project.json` is
+  generated from `PROJECT.md`.)
 - **`.ai/schemas/`** — JSON Schemas validating every state file.
-- **`rules/`** — 9 operating rules: general behavior, lifecycle, state management, testing / security /
-  deployment / SEO checklists, skill-audit protocol, profitability & marketing.
+- **`rules/`** — 10 operating rules: general behavior, lifecycle, state management, testing / security /
+  deployment / SEO checklists, skill-audit protocol, profitability & marketing, and the Crucible
+  (idea viability audit — GO/RESHAPE/KILL + 48–72h validation test).
 - **`docs/`** — feature docs (resumable per feature), architecture, and human-readable ADRs.
 - **`packs/`** — opt-in overlays: `web-seo`, `mobile`, `ai-service`, `streaming`.
 - **`bootstrap.sh`** — install into a new repo, validate state, scaffold features.
@@ -192,21 +201,23 @@ Then tell Claude: **"Run the Pre-Flight Protocol in CLAUDE.md."**
 
 ## The non-negotiables this enforces
 1. A goal stated in **one sentence**.
-2. **Short / mid / long-term** horizons on every major decision.
-3. A clear **MVP** definition; scope creep goes to the roadmap, not the MVP.
-4. **Every decision** logged in machine-readable JSON (survives compaction).
-5. A **growth roadmap** in JSON.
-6. **KPIs** defined, instrumented, and **snapshotted per release** for progress tracking.
-7. A **skill/tool audit** before every project and feature (incl. aitmpl.com skills and 21st.dev UI refs),
+2. An idea that **survived the Crucible**: an adversarial 5-persona audit with a GO/RESHAPE/KILL verdict
+   and a 48–72h validation test — re-triggered automatically when the idea drifts or reality disagrees.
+3. **Short / mid / long-term** horizons on every major decision.
+4. A clear **MVP** definition; scope creep goes to the roadmap, not the MVP.
+5. **Every decision** logged in machine-readable JSON (survives compaction).
+6. A **growth roadmap** in JSON.
+7. **KPIs** defined, instrumented, and **snapshotted per release** for progress tracking.
+8. A **skill/tool audit** before every project and feature (incl. aitmpl.com skills and 21st.dev UI refs),
    with an add/remove/replace **ledger**.
-8. A **technical-debt** register that flags manual work to automate.
-9. **`docs/features/`** breakdowns so AI can resume any feature.
-10. **Testing / security / deployment** (and **SEO + page-speed** for web) as **hard release gates**, with
+9. A **technical-debt** register that flags manual work to automate.
+10. **`docs/features/`** breakdowns so AI can resume any feature.
+11. **Testing / security / deployment** (and **SEO + page-speed** for web) as **hard release gates**, with
     status written back to JSON.
-11. Permission to **spin off parallel agents** for throughput.
-12. A **project memory** file so any agent onboards fast.
-13. A built-in **path to profitability** (email capture, cross-marketing, cross-sell) tied to KPIs.
-14. A **marketing plan** that fuels growth and ties back to KPIs.
+12. Permission to **spin off parallel agents** for throughput.
+13. A **project memory** file so any agent onboards fast.
+14. A built-in **path to profitability** (email capture, cross-marketing, cross-sell) tied to KPIs.
+15. A **marketing plan** that fuels growth and ties back to KPIs.
 
 ## Portfolio dashboard (the export contract)
 Because all project state is normalized, typed JSON, you can point an admin dashboard at it without scraping.

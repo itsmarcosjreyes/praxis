@@ -3,6 +3,25 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.4.0] — 2026-08-01
+
+### Added
+- **The Crucible — idea viability gate**: Praxis now gates WHETHER the idea deserves to be built, not just
+  how. `rules/09-crucible.md` runs a 5-persona adversarial council (Contrarian, Expansionist, Logician,
+  Researcher, Buyer) as parallel subagents; a Judge issues **GO / RESHAPE / KILL** with an assumptions
+  register, MVP adjustments, and the cheapest **48–72h validation test** of the riskiest assumption — all
+  persisted to `.ai/state/viability.json` (new schema; IDs `aud-NNN`, `asm-NNN`).
+- **Re-audit triggers are detected, not remembered**: `scripts/check_viability.py` fingerprints (SHA-256)
+  the idea-defining sections of `PROJECT.md` (goal, non-goals, primary KPI, audience, MVP, constraints) and
+  raises T1–T9 findings — never audited, idea drift, KILL without override (BLOCKED), unapplied RESHAPE,
+  overdue validation test (REQUIRED); test never started, audit staleness (default 45 days pre-ship),
+  primary-KPI off-track streak (default 2 snapshots), MVP phase boundary (RECOMMENDED). Template-exempt via
+  `.praxis-template`.
+- **Enforcement wiring**: Pre-Flight step 3 (hard stop for agents, CLAUDE.md §2/§15), pre-commit
+  `--warn-only` (commits stay cheap), state-validation CI fails on REQUIRED/BLOCKED, and
+  `check_release_gate.py` hard-blocks `v*` releases on unresolved verdicts or an incomplete/unwaived
+  validation test. New `./bootstrap.sh crucible` command. (dec-006 / ADR 0006, mem-010)
+
 ## [0.3.1] — 2026-06-03
 
 ### Fixed

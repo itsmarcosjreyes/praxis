@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 6
+    "next_id": 7
   },
   "decisions": [
     {
@@ -227,6 +227,64 @@
       "supersedes": null,
       "superseded_by": null,
       "adr_doc": "docs/decisions/0005-export-contract.md"
+    },
+    {
+      "id": "dec-006",
+      "title": "Gate the idea itself: Crucible viability audit with machine-detected re-audit triggers",
+      "status": "accepted",
+      "date": "2026-08-01",
+      "author": "marcos@kineticmatrix.io",
+      "category": "process",
+      "goal_link": "Praxis guarantees disciplined building; nothing guaranteed the thing being built was worth building.",
+      "context": "PROJECT.md is the core of WHAT gets built, but no layer challenged the basis of the idea. An idea typed into PROJECT.md flowed straight into MVP scoping and build work with zero adversarial validation, and nothing detected when reality (KPIs, pivots, market) invalidated an earlier judgment.",
+      "options_considered": [
+        {
+          "option": "Personal Claude skill only (/roast style), invoked manually",
+          "pros": [
+            "zero repo footprint",
+            "reusable outside Praxis"
+          ],
+          "cons": [
+            "not enforceable \u2014 depends on the human remembering",
+            "verdict lives in chat, lost on compaction",
+            "no re-audit detection",
+            "not portable to other agents working the repo"
+          ]
+        },
+        {
+          "option": "Advisory rule file only (instructions, no machine enforcement)",
+          "pros": [
+            "simple"
+          ],
+          "cons": [
+            "contradicts Praxis philosophy \u2014 every other discipline here is machine-enforced because instructions alone drift"
+          ]
+        },
+        {
+          "option": "Repo-native protocol + state file + fingerprint-based trigger engine wired into hooks/CI/gates",
+          "pros": [
+            "always runs (Pre-Flight + CI + release gate)",
+            "verdict is durable machine-readable state",
+            "re-audit need is DETECTED (idea drift via content fingerprint, overdue tests, KPI off-track streaks, phase boundaries) instead of remembered",
+            "any agent in any session enforces it"
+          ],
+          "cons": [
+            "more moving parts",
+            "council runs cost tokens/time on every idea change"
+          ]
+        }
+      ],
+      "decision": "Repo-native: rules/09-crucible.md (5-persona council + Judge protocol), .ai/state/viability.json (+schema) as the durable verdict, scripts/check_viability.py as the trigger engine (SHA-256 fingerprint of PROJECT.md's idea-defining sections; T1-T9 triggers). Enforcement: Pre-Flight step 3 (hard for agents), pre-commit --warn-only (commits stay cheap), CI fail on REQUIRED/BLOCKED, release gate hard-blocks unresolved verdicts and unrun 48-72h validation tests.",
+      "tradeoff": "A full council run on every material idea edit adds latency and token cost at exactly the moment the builder wants to move; accepted because a wrong idea is the most expensive artifact Praxis can produce. Warn-only commits mean a solo human CAN locally stack commits on an unaudited idea \u2014 CI and the release gate backstop it.",
+      "horizons": {
+        "short_term": "Every new/changed idea gets an adversarial GO/RESHAPE/KILL verdict and a 48-72h validation test before build work starts.",
+        "mid_term": "Assumption registers + KPI-linked re-audit triggers catch drifting ideas mid-build instead of post-mortem; verdict history becomes reviewable across the portfolio via the export contract.",
+        "long_term": "The Crucible becomes the standard intake valve for the whole kinetic-matrix portfolio: no project enters the ecosystem without a machine-recorded viability verdict, and viability.json feeds the dashboard like every other state file."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0006-crucible-viability-gate.md"
     }
   ]
 }

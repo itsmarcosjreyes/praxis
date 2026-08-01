@@ -8,6 +8,7 @@
 #   ./bootstrap.sh hooks [dir]                         (Re)install git hooks (core.hooksPath -> .githooks)
 #   ./bootstrap.sh snapshot <release> [dir]            Append a KPI snapshot for a release tag
 #   ./bootstrap.sh sync [dir]                          Regenerate .ai/state/project.json from PROJECT.md
+#   ./bootstrap.sh crucible [dir]                      Check idea viability (is a Crucible audit owed?)
 #   ./bootstrap.sh export [dir]                         Emit praxis-export.json (stable dashboard contract)
 #   ./bootstrap.sh new-feature <slug>                  Create docs/features/<slug>.feature.md from template
 #
@@ -66,7 +67,8 @@ cmd_init() {
   echo "  2) Open $target in VS Code (CLAUDE.md auto-loads as Claude instructions)."
   echo "  3) Fill in PROJECT.md: name, slug, type, goal, MVP, packs. (Edit the Markdown, NOT project.json.)"
   echo "  4) Run: ./bootstrap.sh sync   (regenerates .ai/state/project.json from PROJECT.md)."
-  echo "  5) Tell Claude: 'Run the Pre-Flight Protocol in CLAUDE.md.'"
+  echo "  5) Tell Claude: 'Run the Pre-Flight Protocol in CLAUDE.md.' Pre-Flight will detect the fresh idea"
+  echo "     and convene the Crucible (rules/09-crucible.md) to stress-test it BEFORE any build work."
 }
 
 cmd_validate() {
@@ -99,6 +101,11 @@ cmd_sync() {
   python3 "$dir/scripts/sync_project.py" --root "$dir"
 }
 
+cmd_crucible() {
+  local dir="${1:-$HERE}"
+  python3 "$dir/scripts/check_viability.py" --root "$dir"
+}
+
 cmd_export() {
   local dir="${1:-$HERE}"
   python3 "$dir/scripts/export_state.py" --root "$dir" --pretty
@@ -118,7 +125,8 @@ case "${1:-}" in
   hooks)       shift; cmd_hooks "$@";;
   snapshot)    shift; cmd_snapshot "$@";;
   sync)        shift; cmd_sync "$@";;
+  crucible)    shift; cmd_crucible "$@";;
   export)      shift; cmd_export "$@";;
   new-feature) shift; cmd_new_feature "$@";;
-  *) echo "Usage: $0 {init <dir> [name] | validate [dir] | gate [dir] | hooks [dir] | snapshot <release> [dir] | sync [dir] | export [dir] | new-feature <slug>}"; exit 1;;
+  *) echo "Usage: $0 {init <dir> [name] | validate [dir] | gate [dir] | hooks [dir] | snapshot <release> [dir] | sync [dir] | crucible [dir] | export [dir] | new-feature <slug>}"; exit 1;;
 esac

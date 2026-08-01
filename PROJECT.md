@@ -8,6 +8,12 @@
 > Keep the section headings exactly as written — the parser keys off them. Fill in the values; delete the
 > `REPLACE_…`/`...` placeholders as you go.
 >
+> **The idea written here gets stress-tested before it gets built.** The idea-defining sections (Goal,
+> Non-goals, Primary KPI, Audience, MVP, Constraints) are fingerprinted; a new or changed idea makes a
+> **Crucible audit** (`rules/09-crucible.md`) REQUIRED before build work — a 5-persona council issues a
+> GO / RESHAPE / KILL verdict plus a 48–72h validation test, recorded in `.ai/state/viability.json` and
+> enforced by `scripts/check_viability.py`.
+>
 > Allowed values:
 > - **Type:** `web` | `saas` | `ios` | `tvos` | `android` | `streaming` | `ai-service` | `library` | `other`
 > - **MVP status:** `not-started` | `in-progress` | `shipped`

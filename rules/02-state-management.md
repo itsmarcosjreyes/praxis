@@ -6,7 +6,8 @@ files validate against their schema in `.ai/schemas/`. Always set `meta.last_upd
 
 | File | Write WHEN | Key discipline |
 |---|---|---|
-| `PROJECT.md` → `project.json` | Identity, goal, MVP scope, stack, or horizons change | **Edit `PROJECT.md` (Markdown), then `./bootstrap.sh sync` — never hand-edit `project.json`, it's generated.** Goal must stay one sentence; log stack overrides as decisions |
+| `PROJECT.md` → `project.json` | Identity, goal, MVP scope, stack, or horizons change | **Edit `PROJECT.md` (Markdown), then `./bootstrap.sh sync` — never hand-edit `project.json`, it's generated.** Goal must stay one sentence; log stack overrides as decisions. Editing idea-defining sections (goal, non-goals, primary KPI, audience, MVP, constraints) changes the idea fingerprint → a Crucible re-audit becomes REQUIRED |
+| `viability.json` | Crucible audit runs; verdict/test status changes; RESHAPE applied; KILL overridden | Written by the Crucible protocol (`rules/09-crucible.md`); snapshot prior audit into `history[]`; stamp the fingerprint (`check_viability.py --print-fingerprint`); keep `validation_test` status/dates honest — the trigger engine reads them |
 | `decisions.json` | Any non-trivial choice is made or reversed | Append-only; supersede, never edit history; mirror to `docs/decisions/` |
 | `roadmap.json` | Scope changes; items move status; phases planned | Every item has a horizon + priority; MVP-only in phase-0 |
 | `kpis.json` | A KPI is defined/changed/retired | Instrumentation + owner required |
@@ -18,7 +19,7 @@ files validate against their schema in `.ai/schemas/`. Always set `meta.last_upd
 | `status.json` | Start AND end of every work session; gate state changes | The live truth; agents read this first for "where are we" |
 
 ## ID conventions
-`dec-NNN`, `item-NNN`, `kpi-NNN`, `debt-NNN`, `skl-NNN`, `mem-NNN`, `prof-NNN`. Zero-padded, monotonic, never reused.
+`dec-NNN`, `item-NNN`, `kpi-NNN`, `debt-NNN`, `skl-NNN`, `mem-NNN`, `prof-NNN`, `aud-NNN` (Crucible audits), `asm-NNN` (assumptions). Zero-padded, monotonic, never reused.
 
 ## KPI snapshot procedure (per release)
 1. For each KPI in `kpis.json`, read current value from its instrumentation source.

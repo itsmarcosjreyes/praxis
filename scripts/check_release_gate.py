@@ -7,6 +7,8 @@ A release is blocked unless every required checklist has passed and the gate is 
 
 Rules:
   - docs/architecture/overview.md exists, has no template placeholders, and has real substance
+  - viability (Crucible) is current: no BLOCKED/REQUIRED findings from check_viability.py, and the
+    48-72h validation test is completed or explicitly waived (rules/09-crucible.md)
   - checklists.testing.state    == "passed"
   - checklists.security.state   == "passed"
   - checklists.deployment.state == "passed"
@@ -89,6 +91,20 @@ def main():
     arch_fail = check_architecture(root)
     if arch_fail:
         failures.append(arch_fail)
+
+    # Idea viability (the Crucible) is a hard requirement: you cannot ship an MVP whose idea was never
+    # stress-tested, drifted since its audit, or was KILLed. Fingerprint-based — can't be gamed by a flag.
+    try:
+        from check_viability import evaluate as viability_evaluate, load_json as via_load
+        for level, code, msg in viability_evaluate(root):
+            if level in ("BLOCKED", "REQUIRED"):
+                failures.append(f"viability [{code}]: {msg}")
+        via = via_load(os.path.join(root, ".ai", "state", "viability.json")) or {}
+        vt = ((via.get("current") or {}).get("validation_test") or {})
+        if vt.get("status") not in ("completed", "waived"):
+            failures.append(f"viability [test-incomplete]: the 48-72h validation test is '{vt.get('status')}' — complete it (or waive with a reason) before release (rules/09-crucible.md)")
+    except ImportError:
+        failures.append("viability: scripts/check_viability.py missing — cannot verify the Crucible gate")
 
     checklists = status.get("checklists", {})
 

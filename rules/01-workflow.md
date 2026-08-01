@@ -5,14 +5,17 @@ The canonical flow for any unit of work. Enforced by CLAUDE.md §2 (Pre-Flight) 
 ## A. Pre-Flight (before starting anything)
 1. Read all `.ai/state/*.json`. Reconstruct the project from JSON.
 2. Confirm the work serves `project.json → goal.one_sentence`. If not, stop and surface it.
-3. Place the work on a horizon (`roadmap.json`) and confirm MVP scope (`project.json → mvp`).
-4. Run the **Skill & Tool Audit** (`rules/07-skills-and-tools.md`). Update `skills-ledger.json`.
-5. Read `tech-debt.json`; pay down or note blocking debt.
-6. Identify decisions to be made → prepare to log them (`rules/02-state-management.md`).
-7. Ensure `docs/architecture/overview.md` exists (create from template at project start) and still reflects
+3. **Viability check:** run `python3 scripts/check_viability.py`. REQUIRED/BLOCKED → convene the Crucible
+   council (`rules/09-crucible.md`) and resolve the verdict BEFORE any build work. RECOMMENDED → raise it
+   with the human and log the call in `viability.json → triggers_log`.
+4. Place the work on a horizon (`roadmap.json`) and confirm MVP scope (`project.json → mvp`).
+5. Run the **Skill & Tool Audit** (`rules/07-skills-and-tools.md`). Update `skills-ledger.json`.
+6. Read `tech-debt.json`; pay down or note blocking debt.
+7. Identify decisions to be made → prepare to log them (`rules/02-state-management.md`).
+8. Ensure `docs/architecture/overview.md` exists (create from template at project start) and still reflects
    reality. It is a hard release gate — keep it honest as you go, not at the end.
-8. Plan parallelism; spin off subagents for independent tracks.
-9. Set `status.json → current_focus`, `phase`, `next_action`.
+9. Plan parallelism; spin off subagents for independent tracks.
+10. Set `status.json → current_focus`, `phase`, `next_action`.
 
 ## B. Build
 1. Create/update the feature doc in `docs/features/` BEFORE coding (so any agent can resume).
@@ -25,6 +28,8 @@ The canonical flow for any unit of work. Enforced by CLAUDE.md §2 (Pre-Flight) 
 
 ## C. Verify (release gate — hard stop)
 Confirm the architecture doc, then run all applicable checklists and update `status.json → checklists.*`:
+- Viability: `scripts/check_viability.py` clean — idea audited, fingerprint current, RESHAPE/KILL resolved;
+  before MVP ship the 48–72h validation test must be `completed` or `waived` (fingerprint-based gate)
 - Architecture: `docs/architecture/overview.md` filled in, no placeholders, real substance (file-based gate)
 - Testing (`rules/03`), Security (`rules/04`), Deployment (`rules/05`)
 - If web-accessible: SEO + Page Speed (`rules/06`)

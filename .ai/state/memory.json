@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-06-03",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 9
+    "next_id": 11
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
@@ -121,6 +121,18 @@
       "links": {
         "decision": null,
         "release": "v0.3.1",
+        "feature_doc": null
+      }
+    },
+    {
+      "id": "mem-010",
+      "date": "2026-08-01",
+      "type": "milestone",
+      "title": "The Crucible: idea viability became a gated, machine-triggered layer",
+      "detail": "Added rules/09-crucible.md (5-persona adversarial council -> Judge -> GO/RESHAPE/KILL + assumptions register + MVP adjustments + cheapest 48-72h validation test), .ai/state/viability.json (+schema) as the durable verdict, and scripts/check_viability.py as the trigger engine. Re-audit need is detected, not remembered: fingerprint of PROJECT.md's idea-defining sections (T2 idea drift), unresolved RESHAPE/KILL (T3/T4), overdue validation tests (T5), staleness (T7), primary-KPI off-track streaks (T8), MVP phase boundaries (T9). Wired into Pre-Flight step 3, pre-commit (warn-only), state-validation CI (fail), and check_release_gate.py (hard block incl. test completed/waived). See dec-006.",
+      "links": {
+        "decision": "dec-006",
+        "release": null,
         "feature_doc": null
       }
     }

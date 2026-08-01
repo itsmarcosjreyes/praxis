@@ -62,6 +62,29 @@ Any KPI whose source is unset/unsupported is skipped and carried forward at snap
   "detail": "", "links": { "decision": null, "release": null, "feature_doc": null } }
 ```
 
+## viability.json → current (written by the Crucible, rules/09-crucible.md)
+```json
+{
+  "id": "aud-00X", "date": "YYYY-MM-DD", "fingerprint": "<check_viability.py --print-fingerprint>",
+  "audited_mvp_status": "not-started", "verdict": "go", "confidence": "medium",
+  "one_line_call": "", "why": "", "biggest_risk": "", "biggest_upside": "",
+  "money_read": { "price_hypothesis": "", "time_to_first_dollar": "", "ship_speed_read": "" },
+  "scores": { "contrarian": 0, "expansionist": 0, "logician": 0, "researcher": 0, "buyer": 0 },
+  "council": [{ "persona": "contrarian", "stance": "", "key_points": [], "must_hear": "", "score": 0 }],
+  "assumptions": [{ "id": "asm-001", "assumption": "", "load_bearing": true, "status": "untested", "evidence": "" }],
+  "mvp_adjustments": [],
+  "reshape": { "required": false, "pivot": "", "applied": false, "applied_date": null, "rejected_decision_link": null },
+  "kill_override": { "decision_link": null, "reason": "" },
+  "validation_test": { "hypothesis": "", "method": "", "success_criteria": "", "window_hours": 48,
+    "status": "not-started", "started": null, "due": null, "completed": null,
+    "result": "", "outcome": "", "action_taken": "" }
+}
+```
+Move the previous `current` into `history[]` first. Append the firing trigger to `triggers_log`:
+```json
+{ "date": "YYYY-MM-DD", "trigger": "idea-drift", "action": "full council re-run; verdict go → reshape" }
+```
+
 ## profitability.json → mechanisms[]
 ```json
 { "id": "prof-00X", "type": "email-capture", "description": "", "status": "planned",

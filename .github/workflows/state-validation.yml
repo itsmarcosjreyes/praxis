@@ -26,3 +26,9 @@ jobs:
         # carries a `.praxis-template` marker, which downgrades that check to warnings here — so this same
         # workflow passes on the template and stays strict for real projects (which have no marker).
         run: python3 scripts/validate_state.py --strict --root .
+
+      - name: Check idea viability (Crucible)
+        # Fails if the idea in PROJECT.md was never audited, drifted since its audit (fingerprint mismatch),
+        # sits on an unresolved RESHAPE/KILL, or the 48-72h validation test is overdue. Warnings
+        # (staleness, off-track KPIs) do not fail. Skipped on the baseline (`.praxis-template`).
+        run: python3 scripts/check_viability.py --root .

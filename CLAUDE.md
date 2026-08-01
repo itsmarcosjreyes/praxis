@@ -36,21 +36,25 @@ Execute in order. Do not skip. This is enforced — see `rules/01-workflow.md`.
 1. **Load state.** Read all files in `.ai/state/`. Reconstruct the project from JSON, not memory.
 2. **Confirm the goal.** Verify the work in front of you serves `project.json → goal.one_sentence`. If it
    doesn't, surface the conflict before proceeding.
-3. **Locate the horizon.** Confirm where this work sits in short/mid/long-term plans (`roadmap.json`) and
+3. **Viability check (the Crucible).** Run `python3 scripts/check_viability.py`. If it reports REQUIRED or
+   BLOCKED — the idea was never audited, drifted since its audit, sits on an unresolved RESHAPE/KILL, or the
+   48–72h validation test is overdue — **stop and convene the Crucible council (`rules/09-crucible.md`)
+   before any build work.** RECOMMENDED findings: raise them with the human and log the call. See §15.
+4. **Locate the horizon.** Confirm where this work sits in short/mid/long-term plans (`roadmap.json`) and
    whether it belongs in the current MVP/version scope (`project.json → mvp`).
-4. **Skill & tool audit.** Run the protocol in `rules/07-skills-and-tools.md`: confirm the installed skills,
+5. **Skill & tool audit.** Run the protocol in `rules/07-skills-and-tools.md`: confirm the installed skills,
    MCP connectors, and UI references are the *best available* for this work. Check known skills, then
    `https://www.aitmpl.com/skills/`, then `https://21st.dev/home` for UI references. Add/replace/remove
    skills as warranted and log every change in `.ai/state/skills-ledger.json`.
-5. **Check debt.** Read `tech-debt.json` for anything that should be paid down or automated before building
+6. **Check debt.** Read `tech-debt.json` for anything that should be paid down or automated before building
    on top of it.
-6. **Decision check.** If this work involves a non-trivial choice (architecture, dependency, data model,
+7. **Decision check.** If this work involves a non-trivial choice (architecture, dependency, data model,
    vendor, pattern), it requires a decision record — see §4.
-7. **Architecture doc.** Ensure `docs/architecture/overview.md` exists and reflects reality. Create it from
+8. **Architecture doc.** Ensure `docs/architecture/overview.md` exists and reflects reality. Create it from
    the template at project start and keep it current as the design evolves — it is a hard release gate.
-8. **Plan parallelism.** Decide what can be parallelized and spin off subagents (see §7).
-9. **Update status.** Set `status.json → current_focus` and `phase` so any agent picking up later knows the
-   live state.
+9. **Plan parallelism.** Decide what can be parallelized and spin off subagents (see §7).
+10. **Update status.** Set `status.json → current_focus` and `phase` so any agent picking up later knows the
+    live state.
 
 ---
 
@@ -129,6 +133,8 @@ release.
 
 A change is NOT "done" until ALL of these pass and the relevant JSON is updated:
 
+- [ ] Viability current (`scripts/check_viability.py` clean: idea audited, fingerprint matches, no
+      unresolved RESHAPE/KILL; 48–72h validation test completed or waived before MVP ship) — gate-enforced
 - [ ] Architecture described in `docs/architecture/overview.md` (no placeholders, real substance) — gate-enforced
 - [ ] Testing checklist passed (`rules/03-testing-checklist.md`) → `status.json → checklists.testing`
 - [ ] Security checklist passed (`rules/04-security-checklist.md`) → `status.json → checklists.security`
@@ -176,6 +182,7 @@ PROJECT.md                    ← human authoring surface for project identity �
 .ai/
   state/                      ← SOURCE OF TRUTH (JSON, survives context compaction)
     project.json              ← identity, one-sentence goal, MVP, horizons (GENERATED from PROJECT.md)
+    viability.json            ← Crucible audit: verdict, assumptions, 48-72h test, idea fingerprint
     decisions.json            ← machine-readable decision log
     roadmap.json              ← growth plan by phase + horizons
     kpis.json                 ← KPI definitions + targets
@@ -193,7 +200,7 @@ docs/
   architecture/               ← system architecture notes
   decisions/                  ← human-readable ADRs (mirror of decisions.json)
 packs/                        ← opt-in overlays: web-seo, mobile, ai-service, streaming
-scripts/                      ← enforcement & automation (validate_state, check_release_gate, snapshot_kpis, export_state)
+scripts/                      ← enforcement & automation (validate_state, check_viability, check_release_gate, snapshot_kpis, export_state)
 .githooks/                    ← pre-commit (validate state), pre-push (gate on v* tags)
 .github/workflows/            ← CI: state-validation, lighthouse-ci, kpi-snapshot
 lighthouserc.json             ← Core Web Vitals assertions (mirrors rules/06)
@@ -213,17 +220,43 @@ State integrity and the release gates are enforced by tooling, so they cannot si
 
 - **pre-commit hook** regenerates `project.json` from `PROJECT.md` (via `scripts/sync_project.py`) and
   re-stages it, then runs `scripts/validate_state.py` — invalid JSON, schema violations, or duplicate IDs
-  block the commit.
+  block the commit. It also runs `scripts/check_viability.py --warn-only` so a stale/missing Crucible audit
+  is surfaced at every commit (warn at commit; block at Pre-Flight, CI, and release — see §15).
 - **pre-push hook** runs `scripts/check_release_gate.py` when pushing a `v*` tag — a release is blocked
-  unless `docs/architecture/overview.md` is filled in (file-based check), testing/security/deployment (and
+  unless `docs/architecture/overview.md` is filled in (file-based check), the Crucible verdict is current
+  and resolved with its validation test completed/waived (§15), testing/security/deployment (and
   SEO for web) checklists are `passed`, and `release_gate_open: true`.
-- **CI** mirrors this on every push/PR (`state-validation.yml`), enforces Core Web Vitals on web projects
+- **CI** mirrors this on every push/PR (`state-validation.yml` — state validation + viability check),
+  enforces Core Web Vitals on web projects
   (`lighthouse-ci.yml`), and on a `v*` tag automatically writes the KPI snapshot, appends a `memory.json`
   entry, resets `status.json`, and commits it back (`kpi-snapshot.yml`).
 
 Activate hooks in a project with `./bootstrap.sh hooks .` (init does this automatically). Override a single
 run with `--no-verify` only in emergencies. See `scripts/README.md` for the full map and the per-project
 metric-fetch seam (`metrics.json`).
+
+---
+
+## 15. The Crucible — the idea itself is gated, not just the build
+
+Praxis gates HOW you build (architecture, testing, security, KPIs). The Crucible (`rules/09-crucible.md`)
+gates WHETHER the thing in `PROJECT.md` deserves to be built. It is a 5-persona adversarial council
+(Contrarian, Expansionist, Logician, Researcher, Buyer) run as parallel subagents, synthesized by a Judge
+into one verdict — **GO / RESHAPE / KILL** — plus an assumptions register, suggested MVP adjustments, and
+the **cheapest 48–72h test** of the riskiest assumption. All of it is written to `.ai/state/viability.json`.
+
+When it runs (machine-detected by `scripts/check_viability.py`):
+
+- **Always on a new or changed idea.** The idea-defining sections of `PROJECT.md` are fingerprinted; a new
+  goal or an edit to goal/audience/MVP/constraints invalidates the last audit and a re-run becomes REQUIRED.
+- **When the follow-through is owed** — an unapplied RESHAPE, a KILL without an override decision, or a
+  validation test past its due date with no result.
+- **When reality pushes back** — primary KPI off-track for consecutive releases, audit staleness pre-ship,
+  or an MVP phase boundary (all RECOMMENDED; raise with the human).
+
+Verdicts are state, not vibes: a KILL blocks build work unless a human-approved override is logged in
+`decisions.json`; a RESHAPE must be applied to `PROJECT.md` (re-fingerprinted) or rejected via a logged
+decision; the release gate will not open for an MVP whose validation test was never run or waived.
 
 ---
 

@@ -36,4 +36,11 @@ if [ -d "$ROOT/.ai/state" ]; then
   fi
 fi
 
+# 3) Viability (Crucible) check — WARN ONLY at commit time. You may commit an edited idea before the
+#    council has run; the Pre-Flight, CI, and the release gate are where an unaudited idea becomes a block.
+if [ -f "$ROOT/scripts/check_viability.py" ]; then
+  echo "→ pre-commit: checking idea viability (Crucible) ..."
+  "$PY" "$ROOT/scripts/check_viability.py" --root "$ROOT" --warn-only || true
+fi
+
 exit 0

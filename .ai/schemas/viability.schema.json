@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "viability.schema.json",
+  "title": "Viability (Crucible audit state)",
+  "type": "object",
+  "required": ["meta", "config", "current"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["schema_version", "last_updated"],
+      "properties": {
+        "schema_version": { "type": "string" },
+        "last_updated": { "type": "string" },
+        "updated_by": { "type": "string" },
+        "next_id": { "type": "integer" }
+      }
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "revalidate_after_days": { "type": "integer", "minimum": 1 },
+        "kpi_offtrack_streak": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "current": { "$ref": "#/$defs/audit" },
+    "history": { "type": "array", "items": { "$ref": "#/$defs/audit" } },
+    "triggers_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "trigger"],
+        "properties": {
+          "date": { "type": "string" },
+          "trigger": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "audit": {
+      "type": "object",
+      "required": ["id", "verdict"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^aud-[0-9]{3,}$" },
+        "date": { "type": "string" },
+        "fingerprint": { "type": "string" },
+        "audited_mvp_status": { "enum": ["not-started", "in-progress", "shipped", ""] },
+        "verdict": { "enum": ["not-run", "go", "reshape", "kill"] },
+        "confidence": { "enum": ["", "low", "medium", "high"] },
+        "one_line_call": { "type": "string" },
+        "why": { "type": "string" },
+        "biggest_risk": { "type": "string" },
+        "biggest_upside": { "type": "string" },
+        "money_read": {
+          "type": "object",
+          "properties": {
+            "price_hypothesis": { "type": "string" },
+            "time_to_first_dollar": { "type": "string" },
+            "ship_speed_read": { "type": "string" }
+          }
+        },
+        "scores": {
+          "type": "object",
+          "properties": {
+            "contrarian": { "type": "number" },
+            "expansionist": { "type": "number" },
+            "logician": { "type": "number" },
+            "researcher": { "type": "number" },
+            "buyer": { "type": "number" }
+          }
+        },
+        "council": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["persona"],
+            "properties": {
+              "persona": { "enum": ["contrarian", "expansionist", "logician", "researcher", "buyer"] },
+              "stance": { "type": "string" },
+              "key_points": { "type": "array", "items": { "type": "string" } },
+              "must_hear": { "type": "string" },
+              "score": { "type": "number" }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "assumption", "status"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^asm-[0-9]{3,}$" },
+              "assumption": { "type": "string" },
+              "load_bearing": { "type": "boolean" },
+              "status": { "enum": ["untested", "holding", "broken"] },
+              "evidence": { "type": "string" }
+            }
+          }
+        },
+        "mvp_adjustments": { "type": "array", "items": { "type": "string" } },
+        "reshape": {
+          "type": "object",
+          "properties": {
+            "required": { "type": "boolean" },
+            "pivot": { "type": "string" },
+            "applied": { "type": "boolean" },
+            "applied_date": { "type": ["string", "null"] },
+            "rejected_decision_link": { "type": ["string", "null"] }
+          }
+        },
+        "kill_override": {
+          "type": "object",
+          "properties": {
+            "decision_link": { "type": ["string", "null"] },
+            "reason": { "type": "string" }
+          }
+        },
+        "validation_test": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "hypothesis": { "type": "string" },
+            "method": { "type": "string" },
+            "success_criteria": { "type": "string" },
+            "window_hours": { "type": "number" },
+            "status": { "enum": ["not-defined", "not-started", "running", "completed", "waived"] },
+            "started": { "type": ["string", "null"] },
+            "due": { "type": ["string", "null"] },
+            "completed": { "type": ["string", "null"] },
+            "result": { "type": "string" },
+            "outcome": { "enum": [null, "", "validated", "invalidated", "inconclusive"] },
+            "action_taken": { "type": "string" },
+            "waived_reason": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
