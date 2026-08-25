@@ -41,7 +41,31 @@
         "roadmap_items_by_status": { "type": "object" },
         "latest_release": { "type": ["string", "null"] },
         "kpi_status": { "type": "object" },
-        "primary_kpi_id": { "type": ["string", "null"] }
+        "primary_kpi_id": { "type": ["string", "null"] },
+        "viability_verdict": { "type": ["string", "null"], "description": "Current Crucible verdict (contract 1.1.0): go | reshape | kill | not-run." }
+      }
+    },
+    "viability": {
+      "type": "object",
+      "description": "Crucible audit rollup (contract 1.1.0): current verdict + validation-test state; full council detail stays in .ai/state/viability.json.",
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "date": { "type": ["string", "null"] },
+        "verdict": { "type": ["string", "null"] },
+        "confidence": { "type": ["string", "null"] },
+        "one_line_call": { "type": ["string", "null"] },
+        "fingerprint": { "type": ["string", "null"] },
+        "audited_mvp_status": { "type": ["string", "null"] },
+        "assumptions_count": { "type": "integer" },
+        "validation_test": {
+          "type": "object",
+          "properties": {
+            "status": { "type": ["string", "null"] },
+            "due": { "type": ["string", "null"] },
+            "outcome": { "type": ["string", "null"] }
+          }
+        },
+        "history_count": { "type": "integer" }
       }
     },
     "decisions": { "type": "array", "items": { "$ref": "#/$defs/uidRecord" } },
