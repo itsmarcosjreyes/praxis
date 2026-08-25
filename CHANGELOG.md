@@ -3,6 +3,17 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.5.0] — 2026-08-24
+
+### Added
+- **Viability in the export contract (1.1.0)**: `scripts/export_state.py` now emits a top-level
+  `viability` rollup (current Crucible verdict, confidence, idea fingerprint, assumptions count,
+  validation-test status/due/outcome, history count) plus `summary.viability_verdict`, closing the
+  follow-on named in ADR 0006's Consequences. Additive — 1.0.x consumers keep working;
+  `.ai/schemas/praxis-export.schema.json` extended to match. First consumer: the KineticOS
+  portfolio (`eng/portfolio/`), which aggregates every project's export (roadmap `item-100`'s
+  dashboard direction).
+
 ## [0.4.0] — 2026-08-01
 
 ### Added

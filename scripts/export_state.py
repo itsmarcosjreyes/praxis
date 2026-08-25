@@ -30,7 +30,7 @@ import json
 import os
 import sys
 
-EXPORT_CONTRACT_VERSION = "1.0.0"
+EXPORT_CONTRACT_VERSION = "1.1.0"
 GREEN, RED, RESET = ("\033[32m", "\033[31m", "\033[0m") if sys.stdout.isatty() else ("", "", "")
 
 
@@ -152,6 +152,29 @@ def build_summary(project, status, kpis, history, debt, roadmap, profitability, 
     }
 
 
+def build_viability(viability):
+    """Crucible rollup (contract 1.1.0): enough for a portfolio to show the verdict and
+    whether the follow-through (validation test) is owed — full council detail stays in state."""
+    cur = viability.get("current", {}) or {}
+    test = cur.get("validation_test", {}) or {}
+    return {
+        "id": cur.get("id"),
+        "date": cur.get("date"),
+        "verdict": cur.get("verdict"),
+        "confidence": cur.get("confidence"),
+        "one_line_call": cur.get("one_line_call"),
+        "fingerprint": cur.get("fingerprint"),
+        "audited_mvp_status": cur.get("audited_mvp_status"),
+        "assumptions_count": len(cur.get("assumptions") or []),
+        "validation_test": {
+            "status": test.get("status"),
+            "due": test.get("due"),
+            "outcome": test.get("outcome"),
+        },
+        "history_count": len(viability.get("history") or []),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.environ.get("PRAXIS_ROOT", "."))
@@ -176,6 +199,7 @@ def main():
     memory = load(state, "memory.json", {})
     profitability = load(state, "profitability.json", {})
     status = load(state, "status.json", {})
+    viability = load(state, "viability.json", {})
 
     ident = project.get("identity", {})
     slug = ident.get("slug") or "unknown-project"
@@ -210,6 +234,7 @@ def main():
             "horizons": project.get("horizons", {}),
         },
         "summary": build_summary(project, status, kpis, history, debt, roadmap, profitability, decisions, memory),
+        "viability": build_viability(viability),
         "decisions": stamp(decisions.get("decisions", [])),
         "kpis": stamp(kpis.get("kpis", [])),
         "kpi_history": history.get("snapshots", []),  # already keyed by release; values carry kpi_id
@@ -241,6 +266,7 @@ def main():
         },
         "links": build_links(slug, decisions, debt, roadmap, profitability, memory),
     }
+    export["summary"]["viability_verdict"] = export["viability"].get("verdict")
 
     indent = 2 if args.pretty else None
     rendered = json.dumps(export, indent=indent, ensure_ascii=False) + ("\n" if args.pretty else "")
