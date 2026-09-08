@@ -3,6 +3,20 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.6.0] — 2026-09-08
+
+### Added
+- **Local-first `script` metric source**: `scripts/fetch_metrics.py` gains a `script` adapter —
+  `instrumentation.fetch.command` is any shell command run from the repo root whose stdout parses as the
+  KPI value (`{since}`/`{until}` templated as ISO dates). Closes the instrumentation gap for projects
+  without SaaS analytics: a DB query, log grep, or `curl | jq` becomes a KPI with zero credentials.
+  Same safe failure mode as every adapter (error/timeout/non-numeric → skip, carry forward).
+  `kpis.json` ships a working example (`kpi-004`, commit count via `git rev-list --count HEAD`).
+- **Template flag in the export contract (1.2.0)**: `praxis-export.json → project.template` is `true`
+  for the Praxis baseline repo (`.praxis-template` present) so portfolio consumers can render its
+  KPI/verdict rollups as n/a instead of unknowns. Additive — 1.x consumers keep working;
+  `.ai/schemas/praxis-export.schema.json` extended to match. First consumer: the KineticOS portfolio.
+
 ## [0.5.0] — 2026-08-24
 
 ### Added
