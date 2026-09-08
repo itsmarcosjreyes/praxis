@@ -30,7 +30,7 @@ import json
 import os
 import sys
 
-EXPORT_CONTRACT_VERSION = "1.1.0"
+EXPORT_CONTRACT_VERSION = "1.2.0"
 GREEN, RED, RESET = ("\033[32m", "\033[31m", "\033[0m") if sys.stdout.isatty() else ("", "", "")
 
 
@@ -219,6 +219,9 @@ def main():
         "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "project": {
             "slug": slug,
+            # Contract 1.2.0: the Praxis baseline repo itself has no product to measure — consumers
+            # (dashboards, portfolios) should render its KPI/verdict rollups as n/a, not as unknowns.
+            "template": os.path.exists(os.path.join(root, ".praxis-template")),
             "name": ident.get("name"),
             "codename": ident.get("codename"),
             "type": ident.get("type"),

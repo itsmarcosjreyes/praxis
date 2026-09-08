@@ -15,7 +15,7 @@ DESIGN (why it's built this way):
 
 PER-KPI CONFIG (optional, additive to the existing instrumentation block in kpis.json):
   "instrumentation": {
-    "source": "amplitude" | "supabase" | "crux" | "manual",
+    "source": "amplitude" | "supabase" | "crux" | "script" | "manual",
     "event": "core_action_completed",     # amplitude event name
     "fetch": {                             # optional, source-specific overrides
       "metric": "uniques" | "totals" | "count",
@@ -23,9 +23,14 @@ PER-KPI CONFIG (optional, additive to the existing instrumentation block in kpis
       "filter": "created_at=gte.{since}",  # supabase PostgREST filter ({since}/{until} templated)
       "url": "https://example.com/",      # crux target URL/origin
       "form_factor": "PHONE",             # crux: PHONE|DESKTOP|TABLET
-      "percentile_metric": "largest_contentful_paint"  # crux metric key
+      "percentile_metric": "largest_contentful_paint",  # crux metric key
+      "command": "git rev-list --count HEAD"  # script: shell command whose stdout is the value
     }
   }
+
+  The "script" source is the LOCAL-FIRST seam: no SaaS credentials, any measurable-by-command
+  number becomes a KPI today (DB query via psql, log grep, ls | wc -l, curl | jq). The command
+  runs from the repo root with {since}/{until} templated in; stdout must parse as a float.
 
 USAGE:
   python3 scripts/fetch_metrics.py [--since ISO] [--until ISO] [--out metrics.json] [--root DIR]
@@ -39,6 +44,7 @@ import base64
 import datetime
 import json
 import os
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -184,11 +190,40 @@ def fetch_crux(kpi, cfg, since, until):
     return None
 
 
+def fetch_script(kpi, cfg, since, until):
+    """Local-first adapter: run instrumentation.fetch.command from the repo root and parse its
+    stdout as a float. No credentials, no network required — the command owns its own access.
+    {since}/{until} are templated into the command as ISO dates."""
+    command = cfg.get("command")
+    if not command:
+        LOG(f"{kpi['id']}: no script command in instrumentation.fetch — skip")
+        return None
+    command = command.replace("{since}", since.isoformat()).replace("{until}", until.isoformat())
+    try:
+        proc = subprocess.run(command, shell=True, cwd=ROOT or ".",
+                              capture_output=True, text=True, timeout=60)
+        if proc.returncode != 0:
+            LOG(f"{kpi['id']}: script exit {proc.returncode} ({proc.stderr.strip()[:120] or 'no stderr'}) — skip")
+            return None
+        return float(proc.stdout.strip())
+    except subprocess.TimeoutExpired:
+        LOG(f"{kpi['id']}: script timed out (60s) — skip")
+    except ValueError:
+        LOG(f"{kpi['id']}: script stdout {proc.stdout.strip()[:60]!r} is not a number — skip")
+    except Exception as ex:
+        LOG(f"{kpi['id']}: script error {ex} — skip")
+    return None
+
+
+# Repo root for fetch_script's cwd; set in main() once resolved.
+ROOT = None
+
 ADAPTERS = {
     "amplitude": fetch_amplitude,
     "amplitude-eu": fetch_amplitude,
     "supabase": fetch_supabase,
     "crux": fetch_crux,
+    "script": fetch_script,
 }
 
 
@@ -201,6 +236,8 @@ def main():
     args = ap.parse_args()
 
     root = find_root(args.root) or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    global ROOT
+    ROOT = root
     kpis_path = os.path.join(root, ".ai", "state", "kpis.json")
     if not os.path.exists(kpis_path):
         LOG(f"kpis.json not found at {kpis_path}")

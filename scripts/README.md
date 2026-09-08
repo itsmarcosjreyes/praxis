@@ -9,7 +9,7 @@ state files can't silently drift and release bookkeeping happens automatically.
 | `validate_state.py` | Validates every `.ai/state/*.json` against its schema; checks unique IDs; flags `REPLACE_*` placeholders (`--strict` to fail on them) | `pre-commit` hook, `state-validation.yml` |
 | `check_release_gate.py` | Fails unless `docs/architecture/overview.md` is filled in (file-based), testing/security/deployment checklists are `passed` (SEO `passed`/`n/a`), and `release_gate_open: true` | `pre-push` hook (on `v*` tags), `kpi-snapshot.yml` |
 | `snapshot_kpis.py` | Appends a per-release KPI snapshot (deltas + on_track), adds a `memory.json` release entry, optionally resets `status.json` | `kpi-snapshot.yml` |
-| `fetch_metrics.py` | Reads `kpis.json`, queries each KPI's source (Amplitude/Supabase/CrUX), writes `metrics.json` | `kpi-snapshot.yml` (via `fetch_metrics.sh`) |
+| `fetch_metrics.py` | Reads `kpis.json`, queries each KPI's source (Amplitude/Supabase/CrUX, or local-first `script`: any shell command whose stdout is the value), writes `metrics.json` | `kpi-snapshot.yml` (via `fetch_metrics.sh`) |
 | `fetch_metrics.sh` | CI wrapper for the fetcher: reports configured sources, runs it, never blocks a release | `kpi-snapshot.yml` |
 | `export_state.py` | Emits `praxis-export.json` — a stable, versioned projection of all state for dashboards/portfolio rollups | `bootstrap.sh export`, dashboard CI |
 

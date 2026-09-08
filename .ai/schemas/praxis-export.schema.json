@@ -13,6 +13,7 @@
       "required": ["slug"],
       "properties": {
         "slug": { "type": "string", "description": "Portfolio-unique identity; namespaces every record." },
+        "template": { "type": "boolean", "description": "True for the Praxis baseline repo itself — consumers render KPI/verdict rollups as n/a. (1.2.0)" },
         "name": { "type": ["string", "null"] },
         "type": { "type": ["string", "null"] },
         "owner": { "type": ["string", "null"] },

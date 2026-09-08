@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 4
+    "next_id": 5
   },
   "kpis": [
     {
@@ -19,7 +19,9 @@
         "source": "amplitude",
         "event": "core_action_completed",
         "implemented": false,
-        "fetch": { "metric": "uniques" }
+        "fetch": {
+          "metric": "uniques"
+        }
       },
       "owner": "marcos@kineticmatrix.io",
       "review_cadence": "per-release",
@@ -34,7 +36,16 @@
       "unit": "seconds",
       "target": 2.5,
       "direction": "lower-is-better",
-      "instrumentation": { "source": "crux", "event": "web-vitals", "implemented": false, "fetch": { "url": "https://REPLACE_PRODUCTION_ORIGIN/", "form_factor": "PHONE", "percentile_metric": "largest_contentful_paint" } },
+      "instrumentation": {
+        "source": "crux",
+        "event": "web-vitals",
+        "implemented": false,
+        "fetch": {
+          "url": "https://REPLACE_PRODUCTION_ORIGIN/",
+          "form_factor": "PHONE",
+          "percentile_metric": "largest_contentful_paint"
+        }
+      },
       "owner": "marcos@kineticmatrix.io",
       "review_cadence": "per-release",
       "is_primary": false
@@ -48,9 +59,37 @@
       "unit": "count",
       "target": 100,
       "direction": "higher-is-better",
-      "instrumentation": { "source": "supabase", "event": "email_captured", "implemented": false, "fetch": { "table": "subscribers", "filter": "created_at=gte.{since}" } },
+      "instrumentation": {
+        "source": "supabase",
+        "event": "email_captured",
+        "implemented": false,
+        "fetch": {
+          "table": "subscribers",
+          "filter": "created_at=gte.{since}"
+        }
+      },
       "owner": "marcos@kineticmatrix.io",
       "review_cadence": "weekly",
+      "is_primary": false
+    },
+    {
+      "id": "kpi-004",
+      "name": "EXAMPLE: Build momentum (commits)",
+      "category": "product",
+      "definition": "Total commits on the default branch — a working demo of the local-first 'script' source; replace with a real KPI.",
+      "formula": "git rev-list --count HEAD",
+      "unit": "count",
+      "target": 100,
+      "direction": "higher-is-better",
+      "instrumentation": {
+        "source": "script",
+        "implemented": true,
+        "fetch": {
+          "command": "git rev-list --count HEAD"
+        }
+      },
+      "owner": "marcos@kineticmatrix.io",
+      "review_cadence": "per-release",
       "is_primary": false
     }
   ]
