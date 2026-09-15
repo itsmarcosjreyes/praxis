@@ -16,6 +16,7 @@
   <img alt="state" src="https://img.shields.io/badge/state-validated_every_commit-ECE6D9?labelColor=1A1714&style=flat-square">
   <img alt="gates" src="https://img.shields.io/badge/release_gates-machine--enforced-ECE6D9?labelColor=1A1714&style=flat-square">
   <img alt="packs" src="https://img.shields.io/badge/packs-web--seo_·_mobile_·_ai--service_·_streaming-ECE6D9?labelColor=1A1714&style=flat-square">
+  <img alt="license" src="https://img.shields.io/badge/license-MIT-ECE6D9?labelColor=1A1714&style=flat-square">
 </p>
 
 </div>
@@ -295,6 +296,13 @@ with real projects.
 
 - Site: [itsmarcosjreyes.com](https://itsmarcosjreyes.com)
 - GitHub: [@itsmarcosjreyes](https://github.com/itsmarcosjreyes)
+
+## License
+
+[MIT](LICENSE). Bootstrapping a project with `./bootstrap.sh init` copies baseline files into your repo;
+those copies are yours to build on under your own project's license, no attribution required. The Praxis
+name and the Gate mark (`assets/brand/`) identify Praxis itself — use them to refer to Praxis, not to
+brand derived projects.
 
 ---
 
