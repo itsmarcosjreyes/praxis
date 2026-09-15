@@ -12,7 +12,7 @@
 </p>
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/praxis-v0.3.1-B85C38?labelColor=1A1714&style=flat-square">
+  <img alt="version" src="https://img.shields.io/badge/praxis-v0.7.0-B85C38?labelColor=1A1714&style=flat-square">
   <img alt="state" src="https://img.shields.io/badge/state-validated_every_commit-ECE6D9?labelColor=1A1714&style=flat-square">
   <img alt="gates" src="https://img.shields.io/badge/release_gates-machine--enforced-ECE6D9?labelColor=1A1714&style=flat-square">
   <img alt="packs" src="https://img.shields.io/badge/packs-web--seo_·_mobile_·_ai--service_·_streaming-ECE6D9?labelColor=1A1714&style=flat-square">

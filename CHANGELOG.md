@@ -3,6 +3,22 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [0.7.0] — 2026-09-14
+
+### Added
+- **Crucible rebuttal round (Step 2b)**: a bounded, Judge-triggered rebuttal pass when the five persona
+  reports genuinely conflict — single pass, never iterated — before the verdict is synthesized
+  (`rules/09-crucible.md`).
+- **Brand identity v1.0 (dec-007 / ADR 0007)**: the Gate mark (Π, terracotta on the right leg only),
+  paper/ink/terracotta palette, Spectral + Space Grotesk + JetBrains Mono, and a classical, hype-free
+  voice. Canonical guide and light/dark mark + lockup SVGs live in `assets/brand/` — deliberately
+  excluded from `bootstrap.sh init` so projects built on Praxis carry their own brand, never this one.
+
+### Changed
+- **README** rebuilt to the brand system: theme-aware lockup header, etymology, badge row, brand-themed
+  Mermaid palette, voice-compliant diagrams, author attribution, and branded footer.
+- **Repo metadata**: description now leads with the tagline; homepage and topics set.
+
 ## [0.6.0] — 2026-09-08
 
 ### Added
