@@ -241,7 +241,9 @@ metric-fetch seam (`metrics.json`).
 
 Praxis gates HOW you build (architecture, testing, security, KPIs). The Crucible (`rules/09-crucible.md`)
 gates WHETHER the thing in `PROJECT.md` deserves to be built. It is a 5-persona adversarial council
-(Contrarian, Expansionist, Logician, Researcher, Buyer) run as parallel subagents, synthesized by a Judge
+(Contrarian, Expansionist, Logician, Researcher, Buyer) run as parallel subagents — with one optional,
+Judge-triggered rebuttal round when the reports genuinely conflict (single pass, never iterated) —
+synthesized by a Judge
 into one verdict — **GO / RESHAPE / KILL** — plus an assumptions register, suggested MVP adjustments, and
 the **cheapest 48–72h test** of the riskiest assumption. All of it is written to `.ai/state/viability.json`.
 

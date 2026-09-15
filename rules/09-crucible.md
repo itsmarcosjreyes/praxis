@@ -90,9 +90,24 @@ assumptions it identified, and a 1–10 score on its own dimension (1 = walk awa
 
 Every persona stays in character. None hedges or softens. The value is in the friction.
 
+## Step 2b — Rebuttal round (bounded, Judge-triggered)
+
+Not automatic. After reading the five reports, run a rebuttal round ONLY when they genuinely conflict:
+scores span ≥4 points, the emerging verdict is RESHAPE or KILL, or two personas rest on contradictory
+load-bearing assumptions. A low-tension council goes straight to Step 3 at no extra cost.
+
+When triggered: spin up the same five personas again **in parallel in a single message**. Each receives
+the other four reports compressed to stance + sharpest points + score, and returns at most 3 rebuttals or
+concessions plus a revised score. Personas stay in character; conceding under evidence is allowed and
+expected — folding to be agreeable is not.
+
+**Hard termination: exactly one round, ever.** Never iterate toward consensus — divergence that survives
+rebuttal is signal, and naming it is the Judge's job.
+
 ## Step 3 — The Judge delivers the verdict
 
-The orchestrating agent acts as Judge. Read all five reports, name the real tension between them, and
+The orchestrating agent acts as Judge. Read all five reports (and rebuttals, if Step 2b ran — revised
+scores supersede originals), name the real tension between them, and
 resolve it — do not average scores. Fold in the economics lens: rough price, realistic time-to-first-dollar,
 and whether the builder can ship fast given their stated edge. Then make an actual call. "It depends" is not
 a verdict.
@@ -116,7 +131,8 @@ The Judge must also produce:
 1. Snapshot the previous `current` audit (if any) into `viability.json → history[]`.
 2. Write the new audit into `viability.json → current`: verdict, confidence, scores, council one-liners,
    assumptions, MVP adjustments, the validation test (status `not-started`), and the **fingerprint** printed
-   by `python3 scripts/check_viability.py --print-fingerprint`.
+   by `python3 scripts/check_viability.py --print-fingerprint`. Scores and one-liners are the
+   **post-rebuttal** values when Step 2b ran; record `rebuttal_round: true|false` alongside them.
 3. Set `audited_mvp_status` to the current `project.json → mvp.status`.
 4. Append the firing trigger to `viability.json → triggers_log`.
 5. If RESHAPE: propose the `PROJECT.md` edits to the human. When accepted, apply them, run
