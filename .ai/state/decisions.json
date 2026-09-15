@@ -3,7 +3,7 @@
   "meta": {
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
-    "next_id": 7
+    "next_id": 8
   },
   "decisions": [
     {
@@ -146,7 +146,7 @@
       "author": "marcos@kineticmatrix.io",
       "category": "process",
       "goal_link": "Lowers the friction of starting a project (Markdown authoring vs hand-editing JSON) while keeping a machine-validated source of truth.",
-      "context": "bootstrap required editing .ai/state/project.json by hand \u2014 unfriendly and error-prone. But project.json must remain machine-readable: schemas validate it and CI greps it for active packs.",
+      "context": "bootstrap required editing .ai/state/project.json by hand — unfriendly and error-prone. But project.json must remain machine-readable: schemas validate it and CI greps it for active packs.",
       "options_considered": [
         {
           "option": "Replace project.json with PROJECT.md entirely",
@@ -170,7 +170,7 @@
           ]
         }
       ],
-      "decision": "Add PROJECT.md as the human authoring surface and scripts/sync_project.py to compile it into project.json. bootstrap.sh init copies PROJECT.md and runs sync; `bootstrap.sh sync` regenerates on demand; pre-commit regenerates + re-stages so the two never drift. project.json is now GENERATED \u2014 never hand-edited.",
+      "decision": "Add PROJECT.md as the human authoring surface and scripts/sync_project.py to compile it into project.json. bootstrap.sh init copies PROJECT.md and runs sync; `bootstrap.sh sync` regenerates on demand; pre-commit regenerates + re-stages so the two never drift. project.json is now GENERATED — never hand-edited.",
       "tradeoff": "Introduces a Markdown->JSON parser (a small maintenance surface and a fixed heading contract) in exchange for friendlier authoring without losing any machine validation.",
       "horizons": {
         "short_term": "Projects are set up by editing Markdown, not JSON.",
@@ -245,7 +245,7 @@
             "reusable outside Praxis"
           ],
           "cons": [
-            "not enforceable \u2014 depends on the human remembering",
+            "not enforceable — depends on the human remembering",
             "verdict lives in chat, lost on compaction",
             "no re-audit detection",
             "not portable to other agents working the repo"
@@ -257,7 +257,7 @@
             "simple"
           ],
           "cons": [
-            "contradicts Praxis philosophy \u2014 every other discipline here is machine-enforced because instructions alone drift"
+            "contradicts Praxis philosophy — every other discipline here is machine-enforced because instructions alone drift"
           ]
         },
         {
@@ -275,7 +275,7 @@
         }
       ],
       "decision": "Repo-native: rules/09-crucible.md (5-persona council + Judge protocol), .ai/state/viability.json (+schema) as the durable verdict, scripts/check_viability.py as the trigger engine (SHA-256 fingerprint of PROJECT.md's idea-defining sections; T1-T9 triggers). Enforcement: Pre-Flight step 3 (hard for agents), pre-commit --warn-only (commits stay cheap), CI fail on REQUIRED/BLOCKED, release gate hard-blocks unresolved verdicts and unrun 48-72h validation tests.",
-      "tradeoff": "A full council run on every material idea edit adds latency and token cost at exactly the moment the builder wants to move; accepted because a wrong idea is the most expensive artifact Praxis can produce. Warn-only commits mean a solo human CAN locally stack commits on an unaudited idea \u2014 CI and the release gate backstop it.",
+      "tradeoff": "A full council run on every material idea edit adds latency and token cost at exactly the moment the builder wants to move; accepted because a wrong idea is the most expensive artifact Praxis can produce. Warn-only commits mean a solo human CAN locally stack commits on an unaudited idea — CI and the release gate backstop it.",
       "horizons": {
         "short_term": "Every new/changed idea gets an adversarial GO/RESHAPE/KILL verdict and a 48-72h validation test before build work starts.",
         "mid_term": "Assumption registers + KPI-linked re-audit triggers catch drifting ideas mid-build instead of post-mortem; verdict history becomes reviewable across the portfolio via the export contract.",
@@ -285,6 +285,51 @@
       "supersedes": null,
       "superseded_by": null,
       "adr_doc": "docs/decisions/0006-crucible-viability-gate.md"
+    },
+    {
+      "id": "dec-007",
+      "title": "Adopt the Praxis brand identity v1.0 (the Gate mark, terracotta accent, classical voice)",
+      "status": "accepted",
+      "date": "2026-09-14",
+      "author": "marcos@kineticmatrix.io",
+      "category": "other",
+      "goal_link": "Praxis is shared publicly as the canonical standard; a coherent identity makes the repo legible, credible, and attributable.",
+      "context": "The repo had substantive docs but no visual or verbal identity. Brand Guidelines v1.0 were authored externally: the Gate mark (Greek Pi, terracotta on the right leg only), the paper/ink/terracotta palette, Spectral + Space Grotesk + JetBrains Mono, and a disciplined classical voice with fixed taglines.",
+      "options_considered": [
+        {
+          "option": "No brand; plain README",
+          "pros": [
+            "zero maintenance"
+          ],
+          "cons": [
+            "unmemorable in public",
+            "no attribution surface",
+            "voice drifts"
+          ]
+        },
+        {
+          "option": "Adopt Brand Guidelines v1.0 into the repo (assets/brand/ + branded README), excluded from bootstrap init",
+          "pros": [
+            "identifiable and shareable",
+            "canonical assets versioned with the standard",
+            "child projects stay uncontaminated"
+          ],
+          "cons": [
+            "assets to keep in sync with the guide"
+          ]
+        }
+      ],
+      "decision": "Adopt Brand Guidelines v1.0. Canonical guide and SVG assets live in assets/brand/; README carries the branded header/footer, brand-themed diagrams, and author attribution. assets/ is intentionally NOT copied by bootstrap.sh init: projects built on Praxis carry their own brand, never this one. The copied baseline README is expected to be replaced by each project's own README.",
+      "tradeoff": "A small asset-maintenance surface in exchange for a recognizable, attributable public standard.",
+      "horizons": {
+        "short_term": "Branded README and assets ship with the baseline repo; repo metadata (description, topics) matches the brand voice.",
+        "mid_term": "The same identity carries to the Praxis page on the Kinetic Matrix website and any docs site.",
+        "long_term": "Praxis is recognizable across the portfolio and public content while child-project brands remain untouched."
+      },
+      "reversible": true,
+      "supersedes": null,
+      "superseded_by": null,
+      "adr_doc": "docs/decisions/0007-adopt-brand-identity.md"
     }
   ]
 }

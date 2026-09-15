@@ -1,18 +1,39 @@
-# Praxis
+<div align="center">
 
-> *praxis* — the process by which theory becomes disciplined, repeatable action.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/lockup-dark.svg">
+  <img src="assets/brand/lockup-light.svg" alt="PRAXIS — Theory, compiled into action." width="430">
+</picture>
 
-A standardized, AI-native operating system for building **any** project (web, SaaS, iOS/tvOS, Android,
-streaming/OTT, AI service) with Claude — consistently, efficiently, and at scale. Drop it into any repo and
-every agent that touches the project works to the same standard, even after context is compacted.
+<p>
+  <em>πρᾶξις</em> · /ˈprak.sis/ · ancient Greek, n.<br>
+  Activity engaged in by free people — the process by which<br>
+  <strong>theory becomes disciplined, repeatable action.</strong>
+</p>
+
+<p>
+  <img alt="version" src="https://img.shields.io/badge/praxis-v0.3.1-B85C38?labelColor=1A1714&style=flat-square">
+  <img alt="state" src="https://img.shields.io/badge/state-validated_every_commit-ECE6D9?labelColor=1A1714&style=flat-square">
+  <img alt="gates" src="https://img.shields.io/badge/release_gates-machine--enforced-ECE6D9?labelColor=1A1714&style=flat-square">
+  <img alt="packs" src="https://img.shields.io/badge/packs-web--seo_·_mobile_·_ai--service_·_streaming-ECE6D9?labelColor=1A1714&style=flat-square">
+</p>
+
+</div>
+
+---
+
+The AI-native operating system for disciplined building. Drop it into **any** repo — web, SaaS,
+iOS/tvOS, Android, streaming/OTT, AI service — and every agent that touches the project works to the
+same standard, even after context is compacted.
 
 ## The core idea
+
 Your context window is volatile; **the JSON in `.ai/state/` is not**. Claude reconstructs the project from
 those files every session. The rules enforce a disciplined lifecycle with hard release gates. The packs add
 domain specifics only when you need them. You author the project's identity in friendly Markdown
 (`PROJECT.md`); Praxis compiles it into the machine-readable `project.json` the rest of the system trusts.
 
-> Golden rule: *If it isn't written to the relevant `.ai/state/*.json`, it didn't happen.*
+> **The golden rule:** *If it isn't written to the relevant `.ai/state/*.json`, it didn't happen.*
 
 ## How Praxis works (visual)
 
@@ -21,20 +42,21 @@ What lives in a Praxis-equipped repo and how the pieces relate. You author Markd
 validates the machine state; rules and scripts enforce discipline; agents read state to work.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ECE6D9","primaryTextColor":"#1A1714","primaryBorderColor":"#C6BCA6","lineColor":"#8A8174","clusterBkg":"#F3EFE6","clusterBorder":"#C6BCA6","edgeLabelBackground":"#ECE6D9","textColor":"#3A352E"}}}%%
 flowchart TB
-    subgraph Author["✍️ You author (Markdown)"]
+    subgraph Author["You author (Markdown)"]
         PM["PROJECT.md<br/>project identity"]
         ARCH["docs/architecture/overview.md<br/>system design"]
         FEAT["docs/features/*.md<br/>per-feature specs"]
     end
 
-    subgraph Instr["📜 Instructions & rules"]
+    subgraph Instr["Instructions & rules"]
         CL["CLAUDE.md<br/>master operating instructions"]
         RULES["rules/<br/>lifecycle, checklists, audits"]
         PACKS["packs/<br/>web-seo · mobile · ai-service · streaming"]
     end
 
-    subgraph State["🗄️ .ai/state/ — source of truth (JSON)"]
+    subgraph State[".ai/state/ — source of truth (JSON)"]
         PJ["project.json"]
         VIA["viability.json"]
         DEC["decisions.json"]
@@ -48,7 +70,7 @@ flowchart TB
         STAT["status.json"]
     end
 
-    subgraph Enforce["⚙️ Enforcement (scripts + hooks + CI)"]
+    subgraph Enforce["Enforcement (scripts + hooks + CI)"]
         SYNC["sync_project.py"]
         VAL["validate_state.py"]
         VIAC["check_viability.py"]
@@ -57,7 +79,7 @@ flowchart TB
         FETCH["fetch_metrics.py"]
     end
 
-    AGENT(["🤖 Claude / AI agent"])
+    AGENT(["Claude / AI agent"])
 
     PM -->|"compiled by"| SYNC --> PJ
     SYNC -.->|"validated by"| VAL
@@ -77,6 +99,7 @@ flowchart TB
 The path a project takes. Pre-Flight runs before every unit of work; the release gate is a hard stop.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ECE6D9","primaryTextColor":"#1A1714","primaryBorderColor":"#C6BCA6","lineColor":"#8A8174","clusterBkg":"#F3EFE6","clusterBorder":"#C6BCA6","edgeLabelBackground":"#ECE6D9","textColor":"#3A352E"}}}%%
 flowchart TD
     A["bootstrap.sh init"] --> B["Edit PROJECT.md<br/>(goal, MVP, stack, packs)"]
     B --> C["bootstrap.sh sync<br/>→ project.json"]
@@ -121,7 +144,7 @@ sequenceDiagram
     C->>S: Update status.json (current focus, checklists)
     U->>G: git commit
     G-->>S: pre-commit: sync project.json + validate state
-    G-->>U: ❌ blocks if state invalid / ✅ allows if clean
+    G-->>U: blocks if state invalid · allows if clean
     U->>G: git tag v* && push
     G-->>U: pre-push: release gate (architecture + checklists)
 ```
@@ -130,17 +153,18 @@ sequenceDiagram
 Discipline is machine-enforced at three moments: commit, tagged push, and CI.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ECE6D9","primaryTextColor":"#1A1714","primaryBorderColor":"#C6BCA6","lineColor":"#8A8174","clusterBkg":"#F3EFE6","clusterBorder":"#C6BCA6","edgeLabelBackground":"#ECE6D9","textColor":"#3A352E"}}}%%
 flowchart LR
     subgraph Local["Local (git hooks)"]
         CM["git commit"] --> PC["pre-commit"]
         PC --> PC1["sync project.json from PROJECT.md"]
         PC --> PC2["validate_state.py<br/>schema · unique IDs"]
-        PC2 -->|"invalid"| BLOCK1["❌ commit blocked"]
-        PC2 -->|"valid"| OK1["✅ commit"]
+        PC2 -->|"invalid"| BLOCK1["commit blocked"]
+        PC2 -->|"valid"| OK1["commit"]
         TAG["git push v* tag"] --> PP["pre-push"]
         PP --> PP1["check_release_gate.py"]
-        PP1 -->|"gate closed"| BLOCK2["❌ push blocked"]
-        PP1 -->|"gate open"| OK2["✅ push"]
+        PP1 -->|"gate closed"| BLOCK2["push blocked"]
+        PP1 -->|"gate open"| OK2["push"]
     end
 
     subgraph CI["CI (GitHub Actions)"]
@@ -159,6 +183,7 @@ flowchart LR
 You never hand-edit `project.json`; it's generated and kept in lockstep with `PROJECT.md`.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ECE6D9","primaryTextColor":"#1A1714","primaryBorderColor":"#C6BCA6","lineColor":"#8A8174","clusterBkg":"#F3EFE6","clusterBorder":"#C6BCA6","edgeLabelBackground":"#ECE6D9","textColor":"#3A352E"}}}%%
 flowchart LR
     PM["PROJECT.md<br/>(human authoring surface)"] -->|"./bootstrap.sh sync<br/>or pre-commit hook"| SY["sync_project.py"]
     SY --> PJ["project.json<br/>(machine source of truth)"]
@@ -183,6 +208,8 @@ flowchart LR
 - **`docs/`** — feature docs (resumable per feature), architecture, and human-readable ADRs.
 - **`packs/`** — opt-in overlays: `web-seo`, `mobile`, `ai-service`, `streaming`.
 - **`bootstrap.sh`** — install into a new repo, validate state, scaffold features.
+- **`assets/brand/`** — the Praxis identity: mark, lockups, palette, voice ([guide](assets/brand/README.md)).
+  Deliberately not copied by `init` — projects built on Praxis carry their own brand.
 
 ## Quick start
 ```bash
@@ -229,13 +256,14 @@ internal schemas freely as long as the exporter keeps emitting the contract. Sch
 `.ai/schemas/praxis-export.schema.json`; details in `scripts/README.md`.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"#ECE6D9","primaryTextColor":"#1A1714","primaryBorderColor":"#C6BCA6","lineColor":"#8A8174","clusterBkg":"#F3EFE6","clusterBorder":"#C6BCA6","edgeLabelBackground":"#ECE6D9","textColor":"#3A352E"}}}%%
 flowchart LR
     subgraph Repos["Each Praxis project (its own repo)"]
         S1[".ai/state/*.json"] --> EX1["export_state.py"] --> J1["praxis-export.json<br/>(slug-namespaced)"]
     end
     J1 -->|"static read from git"| DASH
     J1 -->|"upsert on release"| SUP["Supabase<br/>(projection, keyed by uid)"]
-    SUP --> DASH["📊 Admin dashboard<br/>(separate project)"]
+    SUP --> DASH["Admin dashboard<br/>(separate project)"]
     SUP -.->|"regression alert"| N8N["n8n / notify"]
 ```
 
@@ -254,3 +282,31 @@ Praxis is designed to improve through contact with real projects. A tight loop:
 Keep changes disciplined — the tool that enforces discipline should be built with it:
 `scripts/validate_state.py` runs on every commit, and the CHANGELOG/tags are the baseline's own KPI history.
 
+## Who's behind this
+
+Praxis is designed and maintained by **[Marcos J. Reyes](https://itsmarcosjreyes.com)** — an engineering
+leader who builds AI-native systems in public. It began as the internal standard behind his own project
+portfolio: every repo he starts is bootstrapped from this baseline, every idea faces the Crucible before a
+line of code, and every release passes the same gates you see here. Praxis sits alongside **KineticOS**,
+his AI-native personal operating system, in the **Kinetic Matrix** body of work.
+
+If Praxis shapes how you build, say so — and tell him what broke. The baseline improves through contact
+with real projects.
+
+- Site: [itsmarcosjreyes.com](https://itsmarcosjreyes.com)
+- GitHub: [@itsmarcosjreyes](https://github.com/itsmarcosjreyes)
+
+---
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/mark-dark.svg">
+  <img src="assets/brand/mark-light.svg" alt="Π" width="56">
+</picture>
+
+<p><em>If it isn't written, it didn't happen.</em></p>
+
+<sub>PRAXIS · Discipline, by design · © 2026 <a href="https://itsmarcosjreyes.com">Marcos J. Reyes</a> · A Kinetic Matrix standard</sub>
+
+</div>

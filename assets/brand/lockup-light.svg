@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120" role="img" aria-label="Praxis — Theory, compiled into action.">
+  <!-- The Gate (Π) -->
+  <g transform="translate(10,10) scale(1)">
+    <rect x="12" y="22" width="76" height="15" fill="#1A1714"/>
+    <rect x="23" y="37" width="15" height="46" fill="#1A1714"/>
+    <rect x="62" y="37" width="15" height="46" fill="#B85C38"/>
+  </g>
+  <!-- Wordmark: Space Grotesk Semibold, tracked -->
+  <text x="122" y="70" font-family="'Space Grotesk',-apple-system,'Helvetica Neue',Arial,sans-serif"
+        font-size="52" font-weight="600" letter-spacing="2" fill="#1A1714">PRAXIS</text>
+  <!-- Tagline: Spectral / serif italic -->
+  <text x="124" y="98" font-family="Spectral,Georgia,serif" font-style="italic" font-weight="300"
+        font-size="19" fill="#3A352E">Theory, compiled into <tspan fill="#B85C38">action.</tspan></text>
+</svg>
