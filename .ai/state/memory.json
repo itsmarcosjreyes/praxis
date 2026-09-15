@@ -2,13 +2,13 @@
   "$schema": "../schemas/memory.schema.json",
   "meta": {
     "schema_version": "1.0.0",
-    "last_updated": "2026-06-03",
+    "last_updated": "2026-09-15",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
     "next_id": 11
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",
-    "where_we_are": "Shipped v0.3.1 on 2026-06-03.",
+    "where_we_are": "Shipped v0.7.0 on 2026-09-15.",
     "whats_next": "The immediate next milestone.",
     "key_risks": []
   },
@@ -133,6 +133,18 @@
       "links": {
         "decision": "dec-006",
         "release": null,
+        "feature_doc": null
+      }
+    },
+    {
+      "id": "mem-011",
+      "date": "2026-09-15",
+      "type": "release",
+      "title": "Released v0.7.0",
+      "detail": "KPI snapshot recorded. Off-track: kpi-004.",
+      "links": {
+        "decision": null,
+        "release": "v0.7.0",
         "feature_doc": null
       }
     }
