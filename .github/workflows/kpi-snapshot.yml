@@ -28,6 +28,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Push the commit-back over a deploy key when the repo protects its default branch with a
+          # ruleset (personal repos cannot add the GitHub Actions app as a bypass actor; a DeployKey
+          # bypass works). Create a write deploy key, store the private half as COMMIT_SSH_KEY, and add
+          # "Deploy keys" to the ruleset bypass list. When the secret is unset (e.g. a freshly
+          # bootstrapped project), checkout falls back to the default GITHUB_TOKEN and nothing changes.
+          ssh-key: ${{ secrets.COMMIT_SSH_KEY }}
 
       - uses: actions/setup-python@v5
         with:
