@@ -219,6 +219,50 @@ def build_project(md_text, existing, today, templated):
     return project
 
 
+PRODUCTION_ORIGIN_TOKEN = "https://REPLACE_PRODUCTION_ORIGIN/"
+
+
+def find_key(obj, key):
+    """Depth-first lookup of the first value stored under `key` anywhere in a nested dict/list."""
+    if isinstance(obj, dict):
+        if key in obj:
+            return obj[key]
+        for v in obj.values():
+            hit = find_key(v, key)
+            if hit is not None:
+                return hit
+    elif isinstance(obj, list):
+        for v in obj:
+            hit = find_key(v, key)
+            if hit is not None:
+                return hit
+    return None
+
+
+def stamp_production_origin(root, project):
+    """Fill the seed kpis.json CrUX example URL from PROJECT.md's Production URL.
+
+    The baseline ships kpi-002 with `https://REPLACE_PRODUCTION_ORIGIN/`; strict validation (pre-commit and
+    CI) rejects that token, so a fresh project could never commit until someone hand-edited kpis.json.
+    Syncing PROJECT.md is the moment the origin becomes known, so stamp it here. No-op when the URL is
+    blank/placeholder or the token is already gone.
+    """
+    url = find_key(project, "production_url")
+    if not isinstance(url, str) or not url.strip() or "REPLACE_" in url:
+        return
+    kpis_path = os.path.join(root, ".ai", "state", "kpis.json")
+    if not os.path.exists(kpis_path):
+        return
+    with open(kpis_path) as f:
+        raw = f.read()
+    if PRODUCTION_ORIGIN_TOKEN not in raw:
+        return
+    origin = url.strip().rstrip("/") + "/"
+    with open(kpis_path, "w") as f:
+        f.write(raw.replace(PRODUCTION_ORIGIN_TOKEN, origin))
+    print(f"{GREEN}✓ Stamped production origin {origin} into .ai/state/kpis.json (was REPLACE_PRODUCTION_ORIGIN).{RESET}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.environ.get("PRAXIS_ROOT", "."))
@@ -274,6 +318,8 @@ def main():
     print(f"{GREEN}✓ Generated {os.path.relpath(json_path, root)} from PROJECT.md "
           f"(name={project['identity']['name']}, type={project['identity']['type']}, "
           f"packs={project['active_packs'] or 'none'}).{RESET}")
+    if not templated:
+        stamp_production_origin(root, project)
     return 0
 
 

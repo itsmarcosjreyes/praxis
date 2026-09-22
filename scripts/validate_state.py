@@ -9,7 +9,8 @@ Checks:
   1. Every state file is valid JSON.
   2. Every state file validates against its schema (if jsonschema installed).
   3. IDs within each file's arrays are unique.
-  4. (--strict) No leftover REPLACE_* placeholders remain (drift in a real project).
+  4. (--strict) No leftover REPLACE_* placeholder TOKENS remain (drift in a real project). Matched as
+     whole tokens (REPLACE_FOO), so prose that mentions the pattern does not count.
 
 Template exemption: the Praxis baseline repo is a TEMPLATE and intentionally keeps REPLACE_* placeholders in
 its seed state. A `.praxis-template` marker at the repo root downgrades strict placeholder failures to
@@ -24,6 +25,7 @@ Env:
   PRAXIS_ROOT can set the repo root.
 """
 import argparse
+import re
 import glob
 import json
 import os
@@ -56,6 +58,9 @@ def collect_ids(node, found):
     elif isinstance(node, dict):
         for v in node.values():
             collect_ids(v, found)
+
+
+PLACEHOLDER_RE = re.compile(r"\bREPLACE_[A-Z0-9_]+\b")
 
 
 def main():
@@ -135,12 +140,16 @@ def main():
                 dup_found = True
 
         # Placeholders
-        placeholder = "REPLACE_" in raw
+        # Token match, not substring: only a real placeholder token (REPLACE_FOO) counts. Prose that merely
+        # mentions "REPLACE_*" (e.g. a memory entry describing this very check) must not trip it.
+        tokens = sorted(set(PLACEHOLDER_RE.findall(raw)))
+        placeholder = bool(tokens)
         if placeholder and strict_placeholders:
-            print(f"{RED}✗ {name}: contains REPLACE_* placeholder(s) (run bootstrap init / fill in values){RESET}")
+            print(f"{RED}✗ {name}: leftover placeholder(s) {', '.join(tokens)} — fill in the value(s) "
+                  f"(PROJECT.md + ./bootstrap.sh sync stamps REPLACE_PRODUCTION_ORIGIN){RESET}")
             ok = False
         elif placeholder:
-            print(f"{YELLOW}⚠ {name}: contains REPLACE_* placeholder(s){RESET}")
+            print(f"{YELLOW}⚠ {name}: contains placeholder(s) {', '.join(tokens)}{RESET}")
 
         if not dup_found and not (placeholder and strict_placeholders):
             print(f"{GREEN}✓ {name}: {schema_msg}{RESET}")

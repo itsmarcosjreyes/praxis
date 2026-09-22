@@ -24,12 +24,16 @@ if [ -f "$ROOT/PROJECT.md" ]; then
     git -C "$ROOT" add .ai/state/project.json
     echo "  (project.json regenerated from PROJECT.md and re-staged)"
   fi
+  if ! git -C "$ROOT" diff --quiet -- .ai/state/kpis.json 2>/dev/null; then
+    git -C "$ROOT" add .ai/state/kpis.json
+    echo "  (kpis.json production origin stamped from PROJECT.md and re-staged)"
+  fi
 fi
 
 # 2) Validate the state files.
 if [ -d "$ROOT/.ai/state" ]; then
   echo "→ pre-commit: validating .ai/state ..."
-  if ! "$PY" "$ROOT/scripts/validate_state.py" --root "$ROOT"; then
+  if ! "$PY" "$ROOT/scripts/validate_state.py" --strict --root "$ROOT"; then
     echo ""
     echo "✗ Commit blocked: state validation failed. Fix the JSON above, or use 'git commit --no-verify' to override (not recommended)."
     exit 1

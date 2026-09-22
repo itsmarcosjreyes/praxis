@@ -3,6 +3,26 @@
 All notable changes to Praxis are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **`validate_state.py` placeholder check is now a token match** (`\bREPLACE_[A-Z0-9_]+\b`), not a
+  substring search. Memory prose that merely mentions "REPLACE_*" (the baseline's own mem-008 / learn-002
+  describe this very check) was failing `--strict` in every product bootstrapped from the baseline.
+- **`bootstrap.sh init` scrubs the baseline's own memory** before handing over `memory.json`: timeline
+  reset to a single init entry, learnings cleared, summary reset. Products no longer inherit Praxis's
+  releases, fixes, and learnings as if they were their own.
+
+- **`sync_project.py` stamps the Production URL into the seed CrUX KPI** (`REPLACE_PRODUCTION_ORIGIN` in
+  `kpis.json`), and `pre-commit` re-stages `kpis.json` when it does. With strict validation at commit
+  time this token would otherwise block a fresh project's first commit; filling PROJECT.md now clears it.
+- **`validate_state.py` names the leftover tokens** it found instead of a generic "placeholder(s)".
+
+### Changed
+- **`pre-commit` runs `validate_state.py --strict`**, matching `state-validation.yml`. Locally the hook
+  used to warn on placeholders while CI failed on them, so drift only surfaced after the push. The
+  baseline itself is unaffected (`.praxis-template` downgrades strict to warnings).
+
 ## [0.7.0] — 2026-09-14
 
 ### Added

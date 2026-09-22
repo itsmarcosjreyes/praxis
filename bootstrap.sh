@@ -27,6 +27,39 @@ stamp_dates() {
   fi
 }
 
+scrub_baseline_memory() {
+  # The baseline's memory.json carries Praxis's OWN history (its releases, fixes, learnings). A fresh
+  # project must not inherit it: reset the timeline to a single init entry and clear learnings, so the
+  # product's memory holds only the product's events. (Other seed state stays as-is.)
+  local root="$1" name="${2:-}"
+  local f="$root/.ai/state/memory.json"
+  [ -f "$f" ] && command -v python3 >/dev/null || return 0
+  python3 - "$f" "$TODAY" "$name" <<'PY'
+import json, sys
+path, today, name = sys.argv[1], sys.argv[2], sys.argv[3]
+d = json.load(open(path))
+label = name or "This project"
+d["summary"] = {
+    "what": f"{label}: one-paragraph plain-language description of the project as it stands today.",
+    "where_we_are": "Freshly initialized from the Praxis baseline; nothing shipped yet.",
+    "whats_next": "Run the Pre-Flight Protocol; the Crucible audits the idea before any build work.",
+    "key_risks": [],
+}
+d["timeline"] = [{
+    "id": "mem-001", "date": today, "type": "init",
+    "title": "Project initialized from the Praxis baseline.",
+    "detail": "Baseline copied by bootstrap.sh init. Praxis's own history was scrubbed so this timeline holds only this project's events.",
+    "links": {"decision": None, "release": None, "feature_doc": None},
+}]
+d["learnings"] = []
+d.setdefault("meta", {})["next_id"] = 2
+d["meta"]["last_updated"] = today
+with open(path, "w") as fh:
+    json.dump(d, fh, indent=2, ensure_ascii=False); fh.write("\n")
+PY
+  echo "✓ memory.json reset: baseline history scrubbed, timeline starts at mem-001 (today)."
+}
+
 install_hooks() {
   local dir="$1"
   if [ -d "$dir/.git" ] || git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
@@ -53,6 +86,7 @@ cmd_init() {
   done
   stamp_dates "$target/.ai"
   stamp_dates "$target/docs"
+  scrub_baseline_memory "$target" "$name"
   if [ -n "$name" ]; then
     # Stamp the name into the authoring Markdown; project.json is regenerated from it below.
     sed -i.bak "s/REPLACE_PROJECT_NAME/${name}/g" "$target/PROJECT.md" && rm -f "$target/PROJECT.md.bak"
