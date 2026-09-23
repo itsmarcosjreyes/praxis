@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "marketing.schema.json",
+  "title": "Marketing plan",
+  "description": "OPTIONAL state file (Rule 08). The project's marketing plan as data: initiatives that each map a channel and hypothesis to the KPI they move, plus dated next actions. Absent file = no plan recorded. Self-contained: external_refs are opaque pointers Praxis never resolves.",
+  "type": "object",
+  "required": ["meta", "plan", "initiatives"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"type": "string"},
+        "last_updated": {"type": "string"},
+        "next_id": {"type": "integer", "minimum": 1}
+      }
+    },
+    "plan": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["none", "draft", "active", "paused", "retired"]},
+        "summary": {"type": "string", "description": "One or two sentences: who we reach, how, toward what."},
+        "stage": {"type": "string", "description": "Free-form current stage, e.g. 'pre-launch anticipation', 'launch week', 'growth'."},
+        "plan_doc": {"type": ["string", "null"], "description": "Repo-relative path to the full plan document, if any."},
+        "external_refs": {
+          "type": "array",
+          "description": "Opaque pointers to plans kept outside the repo (a doc URL, a second-brain path). Praxis never reads them.",
+          "items": {
+            "type": "object",
+            "required": ["label", "ref"],
+            "properties": {"label": {"type": "string"}, "ref": {"type": "string"}}
+          }
+        }
+      }
+    },
+    "initiatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "channel", "status"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^mkt-[0-9]{3,}$"},
+          "name": {"type": "string"},
+          "channel": {"type": "string", "description": "e.g. linkedin, x, email, seo, community, referral, paid."},
+          "hypothesis": {"type": "string"},
+          "kpi_link": {"type": ["string", "null"]},
+          "owner": {"type": ["string", "null"]},
+          "status": {"enum": ["idea", "planned", "active", "done", "dropped"]},
+          "start": {"type": ["string", "null"]},
+          "end": {"type": ["string", "null"]},
+          "result": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["what"],
+        "properties": {
+          "what": {"type": "string"},
+          "due": {"type": ["string", "null"]},
+          "channel": {"type": ["string", "null"]},
+          "initiative": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

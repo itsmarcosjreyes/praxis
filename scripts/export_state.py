@@ -30,7 +30,7 @@ import json
 import os
 import sys
 
-EXPORT_CONTRACT_VERSION = "1.2.0"
+EXPORT_CONTRACT_VERSION = "1.3.0"
 GREEN, RED, RESET = ("\033[32m", "\033[31m", "\033[0m") if sys.stdout.isatty() else ("", "", "")
 
 
@@ -61,7 +61,7 @@ def ns(slug, entity_id):
     return f"{slug}:{entity_id}" if entity_id else slug
 
 
-def build_links(slug, decisions, debt, roadmap, profitability, memory):
+def build_links(slug, decisions, debt, roadmap, profitability, memory, marketing=None):
     """Flatten existing cross-references into a portable edge list for graph/relationship views."""
     edges = []
 
@@ -89,6 +89,8 @@ def build_links(slug, decisions, debt, roadmap, profitability, memory):
                 edge("roadmap_item", it["id"], "depends_on", "roadmap_item", dep)
     for m in profitability.get("mechanisms", []):
         edge("profitability", m["id"], "measures_kpi", "kpi", m.get("kpi_link"))
+    for it in (marketing or {}).get("initiatives", []):
+        edge("marketing", it["id"], "targets_kpi", "kpi", it.get("kpi_link"))
     for ev in memory.get("timeline", []):
         links = ev.get("links", {}) or {}
         edge("memory", ev["id"], "about_decision", "decision", links.get("decision"))
@@ -172,6 +174,32 @@ def build_viability(viability):
             "outcome": test.get("outcome"),
         },
         "history_count": len(viability.get("history") or []),
+        # Contract 1.3.0: per-persona council scores, so a dashboard can draw the council without
+        # reading state. Pre-rebuttal scores only when a rebuttal round ran.
+        "scores": cur.get("scores") or {},
+        "scores_pre_rebuttal": cur.get("scores_pre_rebuttal") if cur.get("rebuttal_round") else None,
+        "rebuttal_round": bool(cur.get("rebuttal_round")),
+    }
+
+
+def build_marketing(slug, marketing):
+    """Marketing plan (contract 1.3.0) from the OPTIONAL `.ai/state/marketing.json` (Rule 08).
+    None when the project records no plan. external_refs pass through untouched: they are opaque
+    pointers to plans kept elsewhere, never resolved here."""
+    if not marketing:
+        return None
+    plan = marketing.get("plan", {}) or {}
+    initiatives = [{**it, "uid": ns(slug, it["id"])} for it in marketing.get("initiatives", []) if "id" in it]
+    actions = sorted(marketing.get("next_actions", []) or [], key=lambda a: (a.get("due") is None, a.get("due") or ""))
+    return {
+        "status": plan.get("status"),
+        "stage": plan.get("stage"),
+        "summary": plan.get("summary"),
+        "plan_doc": plan.get("plan_doc"),
+        "external_refs": plan.get("external_refs", []),
+        "initiatives": initiatives,
+        "active_initiatives": len([i for i in initiatives if i.get("status") == "active"]),
+        "next_actions": actions,
     }
 
 
@@ -200,6 +228,7 @@ def main():
     profitability = load(state, "profitability.json", {})
     status = load(state, "status.json", {})
     viability = load(state, "viability.json", {})
+    marketing = load(state, "marketing.json", None)  # optional (Rule 08)
 
     ident = project.get("identity", {})
     slug = ident.get("slug") or "unknown-project"
@@ -238,6 +267,7 @@ def main():
         },
         "summary": build_summary(project, status, kpis, history, debt, roadmap, profitability, decisions, memory),
         "viability": build_viability(viability),
+        "marketing": build_marketing(slug, marketing),
         "decisions": stamp(decisions.get("decisions", [])),
         "kpis": stamp(kpis.get("kpis", [])),
         "kpi_history": history.get("snapshots", []),  # already keyed by release; values carry kpi_id
@@ -267,9 +297,10 @@ def main():
             "checklists": status.get("checklists", {}),
             "next_action": status.get("next_action"),
         },
-        "links": build_links(slug, decisions, debt, roadmap, profitability, memory),
+        "links": build_links(slug, decisions, debt, roadmap, profitability, memory, marketing),
     }
     export["summary"]["viability_verdict"] = export["viability"].get("verdict")
+    export["summary"]["marketing_status"] = (export["marketing"] or {}).get("status")
 
     indent = 2 if args.pretty else None
     rendered = json.dumps(export, indent=indent, ensure_ascii=False) + ("\n" if args.pretty else "")

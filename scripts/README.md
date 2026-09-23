@@ -38,6 +38,9 @@ Why it's a *contract*, not just a dump:
 - **`links[]` relationship graph**: flattens cross-references already in state (memory→decision,
   debt→decision, roadmap→kpi/profitability, profitability→kpi, decision supersede chains) into
   `{from, rel, to}` edges a UI can draw directly.
+- **Optional sections stay optional**: `marketing` (1.3.0) is `null` unless the project keeps
+  `.ai/state/marketing.json` (Rule 08). Consumers must treat it, and every future optional section, as
+  possibly absent.
 
 Schema: `.ai/schemas/praxis-export.schema.json`. The artifact is gitignored by default (derived, like
 `metrics.json`); a "static read from git" dashboard can un-ignore it to commit it. The dashboard is its own
