@@ -5,6 +5,16 @@ All notable changes to Praxis are recorded here. Format loosely follows
 
 ## [Unreleased]
 
+### Added
+- **Marketing plan and council scores in the export contract (1.3.0)**: Rule 08's plan becomes data in
+  an OPTIONAL `.ai/state/marketing.json` (`.ai/schemas/marketing.schema.json`: plan status/stage/summary,
+  `mkt-NNN` initiatives mapping channel + hypothesis to a KPI, dated next actions, and opaque
+  `external_refs` Praxis never resolves). `praxis-export.json` gains a top-level `marketing` object
+  (`null` when the file is absent), `summary.marketing_status`, `marketing → kpi` edges in `links[]`, and
+  `viability.scores` / `scores_pre_rebuttal` / `rebuttal_round` so a dashboard can draw the Crucible
+  council without reading state. Additive: 1.x consumers keep working, and projects without a plan
+  export exactly as before plus `"marketing": null`.
+
 ### Fixed
 - **`validate_state.py` placeholder check is now a token match** (`\bREPLACE_[A-Z0-9_]+\b`), not a
   substring search. Memory prose that merely mentions "REPLACE_*" (the baseline's own mem-008 / learn-002

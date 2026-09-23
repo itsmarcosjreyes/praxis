@@ -19,6 +19,18 @@ Maintain a lightweight plan that maps channels → actions → the KPI each move
 `marketing:campaign-plan`; content with `marketing:content-creation` / `marketing:email-sequence`; track with
 `marketing:performance-report`. For each initiative record: channel, hypothesis, target KPI, owner, result.
 
+Record the plan as data in **`.ai/state/marketing.json`** (schema `.ai/schemas/marketing.schema.json`).
+The file is **optional**: a project with no plan simply omits it, and nothing else in Praxis requires it.
+- `plan`: `status` (none/draft/active/paused/retired), a one-line `summary`, free-form `stage`, and
+  `plan_doc` (a repo-relative path to the long-form plan, if you keep one).
+- `initiatives[]` (`mkt-NNN`): `name`, `channel`, `hypothesis`, `kpi_link`, `owner`, `status`
+  (idea/planned/active/done/dropped), `start`/`end`, `result`.
+- `next_actions[]`: `what`, `due`, `channel`, `initiative`.
+- `plan.external_refs[]`: optional `{label, ref}` pointers to a plan kept outside the repo (a shared doc,
+  a second-brain path). Praxis never reads or resolves them; they exist so an outside tool can.
+
+`bootstrap.sh export` carries it to consumers as `praxis-export.json → marketing` (contract 1.3.0).
+
 Suggested loop:
 1. **Acquire** — SEO (`rules/06`), social, referrals → traffic KPIs.
 2. **Capture** — email capture / signup → growth KPIs (e.g. `kpi-003`).
