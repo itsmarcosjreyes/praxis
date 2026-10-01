@@ -6,7 +6,7 @@ state files can't silently drift and release bookkeeping happens automatically.
 | Script | Does | Run by |
 |---|---|---|
 | `sync_project.py` | Compiles `PROJECT.md` (human authoring surface) into `.ai/state/project.json` (machine source of truth); stamps the Production URL into the seed CrUX KPI (`REPLACE_PRODUCTION_ORIGIN`); `--check` detects drift | `pre-commit` hook, `bootstrap.sh sync` |
-| `validate_state.py` | Validates every `.ai/state/*.json` against its schema; checks unique IDs; flags `REPLACE_*` placeholder tokens, matched as whole tokens so prose mentioning the pattern does not count (`--strict` to fail on them) | `pre-commit` hook, `state-validation.yml` |
+| `validate_state.py` | Validates every `.ai/state/*.json` against its schema; checks unique IDs and that `meta.next_id` is ahead of every existing id (`--fix-next-id` catches it up); flags `REPLACE_*` placeholder tokens, matched as whole tokens so prose mentioning the pattern does not count (`--strict` to fail on them) | `pre-commit` hook, `state-validation.yml` |
 | `check_release_gate.py` | Fails unless `docs/architecture/overview.md` is filled in (file-based), testing/security/deployment checklists are `passed` (SEO `passed`/`n/a`), and `release_gate_open: true` | `pre-push` hook (on `v*` tags), `kpi-snapshot.yml` |
 | `snapshot_kpis.py` | Appends a per-release KPI snapshot (deltas + on_track), adds a `memory.json` release entry, optionally resets `status.json` | `kpi-snapshot.yml` |
 | `fetch_metrics.py` | Reads `kpis.json`, queries each KPI's source (Amplitude/Supabase/CrUX, or local-first `script`: any shell command whose stdout is the value), writes `metrics.json` | `kpi-snapshot.yml` (via `fetch_metrics.sh`) |
@@ -17,6 +17,7 @@ state files can't silently drift and release bookkeeping happens automatically.
 ```bash
 python3 scripts/validate_state.py            # warn on placeholders
 python3 scripts/validate_state.py --strict   # fail on placeholders (CI mode)
+python3 scripts/validate_state.py --fix-next-id   # catch stale meta.next_id counters up to max id + 1
 python3 scripts/check_release_gate.py        # is the release gate open?
 python3 scripts/snapshot_kpis.py --release v1.2.0 --reset-status
 python3 scripts/snapshot_kpis.py --release v1.2.0 --values metrics.json   # with real metric values
@@ -51,7 +52,7 @@ release for cross-project queries, (c) publish as a release asset.
 Hooks live in `.githooks/` and are activated with `git config core.hooksPath .githooks`
 (`bootstrap.sh init` does this automatically). Override a single run with `--no-verify` (discouraged).
 
-- **pre-commit** → `validate_state.py` (every commit; blocks invalid state).
+- **pre-commit** → `validate_state.py` (every commit, on disk and as staged; blocks invalid state).
 - **pre-push** → `check_release_gate.py` (only when pushing a `v*` tag; blocks unsanctioned releases).
 
 ## CI workflows (`.github/workflows/`)

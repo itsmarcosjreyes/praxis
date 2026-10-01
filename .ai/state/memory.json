@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "2026-09-15",
     "purpose": "Single onboarding file. Any agent should be able to read this + the other state files and fully understand the project's evolution, current state, and why things are the way they are.",
-    "next_id": 11
+    "next_id": 12
   },
   "summary": {
     "what": "One-paragraph plain-language description of the project as it stands today.",

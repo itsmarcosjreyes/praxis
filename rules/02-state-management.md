@@ -2,7 +2,8 @@
 
 The state files are the project's long-term memory. This rule defines exactly when to touch each one. All
 files validate against their schema in `.ai/schemas/`. Always set `meta.last_updated` (ISO 8601) and bump
-`meta.next_id` when you add an item.
+`meta.next_id` when you add an item (take the new id from it). `validate_state.py` blocks the commit when
+`next_id` is not ahead of the highest existing id; `python3 scripts/validate_state.py --fix-next-id` catches it up.
 
 | File | Write WHEN | Key discipline |
 |---|---|---|

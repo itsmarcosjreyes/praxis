@@ -16,6 +16,14 @@ All notable changes to Praxis are recorded here. Format loosely follows
   export exactly as before plus `"marketing": null`.
 
 ### Fixed
+- **`validate_state.py` checks `meta.next_id`**: it must be ahead of the highest existing id of the file's
+  primary prefix (`dec-` in decisions.json, `mem-` in memory.json, ...). Nothing enforced the counter, so it
+  drifted (a product sat at `next_id: 13` with 27 decisions, and a tech-debt counter pointed at an id already
+  in use). `--fix-next-id` catches stale counters up in place and never lowers one. The baseline's own
+  memory.json and profitability.json counters were stale and are caught up.
+- **`pre-commit` also validates the staged state** when `.ai/` in the index differs from the working tree.
+  It used to read only the files on disk, so a commit could pass locally while the committed JSON failed
+  CI's `state-validation.yml`.
 - **`validate_state.py` placeholder check is now a token match** (`\bREPLACE_[A-Z0-9_]+\b`), not a
   substring search. Memory prose that merely mentions "REPLACE_*" (the baseline's own mem-008 / learn-002
   describe this very check) was failing `--strict` in every product bootstrapped from the baseline.

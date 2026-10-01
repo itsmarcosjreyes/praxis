@@ -3,7 +3,8 @@
 # Installed via: git config core.hooksPath .githooks   (bootstrap.sh init does this for you)
 #
 # Fast, always-on. Regenerates project.json from PROJECT.md (so the Markdown is the thing you edit),
-# then blocks the commit if any state file is invalid JSON, fails its schema, or has duplicate IDs.
+# then blocks the commit if any state file (on disk, and as staged when that differs) is invalid JSON, fails
+# its schema, has duplicate IDs, or has a stale meta.next_id.
 # Placeholders (REPLACE_*) are a warning here, not a block.
 set -euo pipefail
 
@@ -37,6 +38,20 @@ if [ -d "$ROOT/.ai/state" ]; then
     echo ""
     echo "✗ Commit blocked: state validation failed. Fix the JSON above, or use 'git commit --no-verify' to override (not recommended)."
     exit 1
+  fi
+
+  # The check above reads the working tree, but the commit holds the index. When they differ (a partial
+  # stage, or a fix made on disk and never staged), validate the staged snapshot too.
+  if ! git -C "$ROOT" diff --quiet -- .ai .praxis-template 2>/dev/null; then
+    echo "→ pre-commit: staged .ai differs from the working tree; validating the staged version ..."
+    STAGED="$(mktemp -d)"
+    trap 'rm -rf "$STAGED"' EXIT
+    git -C "$ROOT" ls-files -z -- .ai .praxis-template | (cd "$ROOT" && git checkout-index -z --stdin --prefix="$STAGED/")
+    if ! "$PY" "$ROOT/scripts/validate_state.py" --strict --root "$STAGED"; then
+      echo ""
+      echo "✗ Commit blocked: the STAGED state is invalid (your working tree may already be fixed — 'git add' the fix)."
+      exit 1
+    fi
   fi
 fi
 

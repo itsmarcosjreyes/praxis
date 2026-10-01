@@ -11,6 +11,9 @@ Checks:
   3. IDs within each file's arrays are unique.
   4. (--strict) No leftover REPLACE_* placeholder TOKENS remain (drift in a real project). Matched as
      whole tokens (REPLACE_FOO), so prose that mentions the pattern does not count.
+  5. `meta.next_id` is ahead of every existing id of the file's primary prefix (dec-NNN in decisions.json,
+     mem-NNN in memory.json, ...), so the next item never reuses an id. `--fix-next-id` catches stale
+     counters up to max + 1 in place (it never lowers one).
 
 Template exemption: the Praxis baseline repo is a TEMPLATE and intentionally keeps REPLACE_* placeholders in
 its seed state. A `.praxis-template` marker at the repo root downgrades strict placeholder failures to
@@ -20,7 +23,7 @@ real projects (which must NOT have the marker). JSON/schema/duplicate-ID checks 
 Exit code 0 = pass, 1 = fail.
 
 Usage:
-  python3 scripts/validate_state.py [--strict] [--root DIR]
+  python3 scripts/validate_state.py [--strict] [--fix-next-id] [--root DIR]
 Env:
   PRAXIS_ROOT can set the repo root.
 """
@@ -62,10 +65,38 @@ def collect_ids(node, found):
 
 PLACEHOLDER_RE = re.compile(r"\bREPLACE_[A-Z0-9_]+\b")
 
+# The id family meta.next_id counts, per file (rules/02-state-management.md). Files holding a second family
+# (memory: learn-NNN, viability: asm-NNN) number it by hand; next_id tracks only the primary one.
+PRIMARY_PREFIX = {
+    "decisions.json": "dec", "roadmap.json": "item", "kpis.json": "kpi", "tech-debt.json": "debt",
+    "skills-ledger.json": "skl", "memory.json": "mem", "profitability.json": "prof", "viability.json": "aud",
+    "marketing.json": "mkt",
+}
+NEXT_ID_RE = re.compile(r'("next_id"\s*:\s*)(\d+)')
+
+
+def max_id_number(node, prefix):
+    """Highest NNN among `prefix-NNN` ids anywhere under node (0 if none)."""
+    best = 0
+    if isinstance(node, list):
+        for x in node:
+            best = max(best, max_id_number(x, prefix))
+    elif isinstance(node, dict):
+        for k, v in node.items():
+            if k == "id" and isinstance(v, str):
+                m = re.fullmatch(re.escape(prefix) + r"-(\d+)", v)
+                if m:
+                    best = max(best, int(m.group(1)))
+            elif k != "meta":
+                best = max(best, max_id_number(v, prefix))
+    return best
+
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--strict", action="store_true", help="Fail on REPLACE_* placeholders.")
+    ap.add_argument("--fix-next-id", action="store_true",
+                    help="Rewrite a stale meta.next_id to max existing id + 1 (never lowers it).")
     ap.add_argument("--root", default=os.environ.get("PRAXIS_ROOT", "."))
     args = ap.parse_args()
 
@@ -151,7 +182,25 @@ def main():
         elif placeholder:
             print(f"{YELLOW}⚠ {name}: contains placeholder(s) {', '.join(tokens)}{RESET}")
 
-        if not dup_found and not (placeholder and strict_placeholders):
+        # next_id must stay ahead of the ids already used, or the next item collides with an existing one.
+        stale_next_id = False
+        meta = data.get("meta") if isinstance(data, dict) else None
+        prefix = PRIMARY_PREFIX.get(name)
+        if prefix and isinstance(meta, dict) and isinstance(meta.get("next_id"), int):
+            highest = max_id_number(data, prefix)
+            if meta["next_id"] <= highest:
+                if args.fix_next_id:
+                    raw = NEXT_ID_RE.sub(lambda m: f"{m.group(1)}{highest + 1}", raw, count=1)
+                    with open(path, "w") as f:
+                        f.write(raw)
+                    print(f"{YELLOW}  {name}: meta.next_id {meta['next_id']} -> {highest + 1}{RESET}")
+                else:
+                    print(f"{RED}✗ {name}: meta.next_id is {meta['next_id']} but {prefix}-{highest:03d} exists — "
+                          f"run `python3 scripts/validate_state.py --fix-next-id`{RESET}")
+                    ok = False
+                    stale_next_id = True
+
+        if not dup_found and not stale_next_id and not (placeholder and strict_placeholders):
             print(f"{GREEN}✓ {name}: {schema_msg}{RESET}")
 
     print()

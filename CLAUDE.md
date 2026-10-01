@@ -219,9 +219,10 @@ bootstrap.sh                  ← copy this baseline into any new repo + install
 State integrity and the release gates are enforced by tooling, so they cannot silently drift:
 
 - **pre-commit hook** regenerates `project.json` from `PROJECT.md` (via `scripts/sync_project.py`) and
-  re-stages it, then runs `scripts/validate_state.py` — invalid JSON, schema violations, or duplicate IDs
-  block the commit. It also runs `scripts/check_viability.py --warn-only` so a stale/missing Crucible audit
-  is surfaced at every commit (warn at commit; block at Pre-Flight, CI, and release — see §15).
+  re-stages it, then runs `scripts/validate_state.py` on the working tree and, when it differs, on the staged
+  snapshot — invalid JSON, schema violations, duplicate IDs, or a stale `meta.next_id` block the commit.
+  It also runs `scripts/check_viability.py --warn-only` so a stale/missing Crucible audit is surfaced
+  at every commit (warn at commit; block at Pre-Flight, CI, and release — see §15).
 - **pre-push hook** runs `scripts/check_release_gate.py` when pushing a `v*` tag — a release is blocked
   unless `docs/architecture/overview.md` is filled in (file-based check), the Crucible verdict is current
   and resolved with its validation test completed/waived (§15), testing/security/deployment (and

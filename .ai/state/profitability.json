@@ -4,7 +4,7 @@
     "schema_version": "1.0.0",
     "last_updated": "REPLACE_ISO_DATE",
     "rule": "At least one mechanism must be 'active' before MVP ship. A web surface without an email capture or growth loop is not done.",
-    "next_id": 2
+    "next_id": 4
   },
   "mechanisms": [
     {
