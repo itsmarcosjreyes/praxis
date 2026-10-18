@@ -67,7 +67,7 @@ install_hooks() {
     chmod +x "$dir/scripts/"*.py 2>/dev/null || true
     chmod +x "$dir/scripts/"*.sh 2>/dev/null || true
     git -C "$dir" config core.hooksPath .githooks
-    echo "✓ Git hooks active (core.hooksPath -> .githooks): pre-commit (validate), pre-push (gate on v* tags)."
+    echo "✓ Git hooks active (core.hooksPath -> .githooks): pre-commit (validate), commit-msg (subject line), pre-push (gate on v* tags)."
   else
     echo "⚠ $dir is not a git repo yet. After 'git init', run: ./bootstrap.sh hooks ."
   fi

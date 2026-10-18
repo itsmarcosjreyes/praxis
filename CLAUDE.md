@@ -201,7 +201,7 @@ docs/
   decisions/                  ← human-readable ADRs (mirror of decisions.json)
 packs/                        ← opt-in overlays: web-seo, mobile, ai-service, streaming
 scripts/                      ← enforcement & automation (validate_state, check_viability, check_release_gate, snapshot_kpis, export_state)
-.githooks/                    ← pre-commit (validate state), pre-push (gate on v* tags)
+.githooks/                    ← pre-commit (validate state), commit-msg (subject line), pre-push (gate on v* tags)
 .github/workflows/            ← CI: state-validation, lighthouse-ci, kpi-snapshot
 lighthouserc.json             ← Core Web Vitals assertions (mirrors rules/06)
 bootstrap.sh                  ← copy this baseline into any new repo + install hooks
@@ -223,6 +223,8 @@ State integrity and the release gates are enforced by tooling, so they cannot si
   snapshot — invalid JSON, schema violations, duplicate IDs, or a stale `meta.next_id` block the commit.
   It also runs `scripts/check_viability.py --warn-only` so a stale/missing Crucible audit is surfaced
   at every commit (warn at commit; block at Pre-Flight, CI, and release — see §15).
+- **commit-msg hook** blocks a message whose subject isn't followed by a blank line (git would fold
+  the body into the subject).
 - **pre-push hook** runs `scripts/check_release_gate.py` when pushing a `v*` tag — a release is blocked
   unless `docs/architecture/overview.md` is filled in (file-based check), the Crucible verdict is current
   and resolved with its validation test completed/waived (§15), testing/security/deployment (and

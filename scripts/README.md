@@ -53,6 +53,7 @@ Hooks live in `.githooks/` and are activated with `git config core.hooksPath .gi
 (`bootstrap.sh init` does this automatically). Override a single run with `--no-verify` (discouraged).
 
 - **pre-commit** → `validate_state.py` (every commit, on disk and as staged; blocks invalid state).
+- **commit-msg** → blocks a message whose subject isn't followed by a blank line (git would fold the body into the subject).
 - **pre-push** → `check_release_gate.py` (only when pushing a `v*` tag; blocks unsanctioned releases).
 
 ## CI workflows (`.github/workflows/`)

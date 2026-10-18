@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# commit-msg: the subject is one line, and a blank line comes before any body. Git joins every line
+# before the first blank line into the subject, so without it `git log --oneline` shows a paragraph.
+# Installed with core.hooksPath -> .githooks. Emergency bypass: git commit --no-verify.
+set -uo pipefail
+# what git keeps: no comment lines, nothing below the --verbose scissors, no leading blank lines
+shape=$(sed '/^# -\{24\} >8 -\{24\}$/,$d' "$1" | grep -v '^#' | sed '/[^[:space:]]/,$!d')
+if [[ -n "$(printf '%s\n' "$shape" | sed -n '2{/[^[:space:]]/p;}')" ]]; then
+  echo "COMMIT BLOCKED (message shape): the line after the subject must be blank." >&2
+  echo "Git would make all of this the subject: $(printf '%s\n' "$shape" | sed '/^[[:space:]]*$/,$d' | tr '\n' ' ' | cut -c1-140)..." >&2
+  echo "Write the subject on one line, then a blank line, then the body." >&2
+  exit 1
+fi
+exit 0
