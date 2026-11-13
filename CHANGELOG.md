@@ -16,6 +16,11 @@ All notable changes to Praxis are recorded here. Format loosely follows
   export exactly as before plus `"marketing": null`.
 
 ### Fixed
+- **pre-commit checks the schemas the way CI does**: the hook ran the first `python3` on PATH, and when that
+  one had no `jsonschema` (an app's bundled runtime can come first) validation fell back to parse-only and
+  printed STATE VALID, so schema errors passed the hook and failed CI's strict check. It now picks a
+  `python3` that can import `jsonschema` (every one on PATH, then /usr/bin, /opt/homebrew/bin, /usr/local/bin)
+  and, when none can, warns loudly that the schemas are not checked and how to install it.
 - **`validate_state.py` checks `meta.next_id`**: it must be ahead of the highest existing id of the file's
   primary prefix (`dec-` in decisions.json, `mem-` in memory.json, ...). Nothing enforced the counter, so it
   drifted (a product sat at `next_id: 13` with 27 decisions, and a tech-debt counter pointed at an id already

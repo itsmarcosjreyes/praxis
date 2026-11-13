@@ -9,11 +9,22 @@
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
-PY="$(command -v python3 || true)"
+# Use a python3 that has jsonschema, so this hook checks the schemas the way CI does (CI installs it).
+# The first python3 on PATH may lack it (an app's bundled runtime can come first); without it the check
+# is parse-only, and schema errors pass here and fail in CI.
+PY=""
+while IFS= read -r cand; do
+  if [ -n "$cand" ] && [ -x "$cand" ] && "$cand" -c 'import jsonschema' >/dev/null 2>&1; then PY="$cand"; break; fi
+done < <(type -ap python3 2>/dev/null; printf '%s\n' /usr/bin/python3 /opt/homebrew/bin/python3 /usr/local/bin/python3)
 
 if [ -z "$PY" ]; then
-  echo "⚠ pre-commit: python3 not found; skipping sync + state validation."
-  exit 0
+  PY="$(command -v python3 || true)"
+  if [ -z "$PY" ]; then
+    echo "⚠ pre-commit: python3 not found; skipping sync + state validation."
+    exit 0
+  fi
+  echo "⚠ pre-commit: no python3 here has jsonschema, so the schemas are NOT checked, only that the JSON parses."
+  echo "  CI checks them and will fail on what this misses. Fix: $PY -m pip install jsonschema"
 fi
 
 # 1) PROJECT.md is the source of truth for project identity — regenerate project.json from it and
